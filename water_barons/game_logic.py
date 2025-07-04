@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple # Dict was removed, ensure it's not needed or use dict
+from typing import List, Tuple, Optional, Dict # Added Optional, Dict
 from water_barons.game_state import GameState
 from water_barons.game_entities import (
     Player, Card, WhimCard, FacilityCard, DistributionCard,
@@ -57,111 +57,135 @@ class GameLogic:
 
 
     # --- Phase Implementations (Placeholders) ---
-    def whim_draft_phase(self, get_player_draft_choice_cb):
-        """
-        Players snake-draft Whim cards into the shared Crowd Deck.
-        The callback `get_player_draft_choice_cb(player, options, pick_number)` is used for CLI interaction.
-        """
-        self.game_state.game_log.append("\n-- Whim Draft Phase --")
+    def initiate_whim_draft(self):
+        """Sets up the state for starting a Whim Draft."""
+        self.game_state.game_log.append("\n-- Whim Draft Phase Initiated --")
         num_picks_per_player = 2
         num_players = len(self.game_state.players)
-        drafted_whims_this_round: List[WhimCard] = []
 
-        # Adjust picks if any player has draw_extra_whim_flag
-        player_picks_remaining = {idx: num_picks_per_player for idx in range(num_players)}
+        self.game_state.whim_draft_player_picks_remaining = {idx: num_picks_per_player for idx in range(num_players)}
         for idx, p in enumerate(self.game_state.players):
             if p.draw_extra_whim_flag:
-                player_picks_remaining[idx] += 1
+                self.game_state.whim_draft_player_picks_remaining[idx] += 1
                 self.game_state.game_log.append(f"{p.name} gets an extra Whim draft pick this round from Drone Drops effect.")
                 p.draw_extra_whim_flag = False # Reset flag
 
-        # Determine draft order for snake draft - this needs to handle variable picks
-        # Standard snake draft: P1, P2, P3, then P3, P2, P1 for their second picks.
-        # If extra picks, they could be at the end of their normal turn or start of next.
-        # Simplified: each player takes their picks in order, then reverse, handling extra picks within their turn.
+        # Construct the full snake draft order
+        draft_order = []
+        # Round 1 picks (e.g., P0, P1, P2)
+        for i in range(num_players):
+            draft_order.append(i)
+        # Round 2 picks (e.g., P2, P1, P0)
+        for i in reversed(range(num_players)):
+            draft_order.append(i)
 
-        draft_order_round_1 = list(range(num_players))
-        draft_order_round_2 = list(reversed(range(num_players)))
-        # This simplified model will iterate twice (for base 2 picks)
-        # and allow players with more picks to take them sequentially.
+        # Add subsequent rounds for players with extra picks (simplified: they pick again in normal then reverse order)
+        # A more complex rule might interleave these. For now, they pick after normal snake.
+        # This logic needs to be more robust if players have >1 extra pick or if order matters more.
+        # Current player_picks_remaining handles total picks, the order list is for turn.
+        # We'll build the full turn order list based on total picks.
 
-        for pick_round in range(max(player_picks_remaining.values())): # Max picks any player has
-            current_draft_order = draft_order_round_1 if pick_round % 2 == 0 else draft_order_round_2
+        full_draft_turn_order = []
+        picks_made_by_player = {idx: 0 for idx in range(num_players)}
 
-            for player_idx in current_draft_order:
-                if player_picks_remaining[player_idx] > 0:
-                    player = self.game_state.players[player_idx]
-                    actual_pick_number_for_player = (num_picks_per_player + (1 if self.game_state.players[player_idx].draw_extra_whim_flag else 0) ) - player_picks_remaining[player_idx] + 1
+        temp_draft_order_players = list(range(num_players))
+        draft_direction_forward = True
+
+        total_picks_to_make = sum(self.game_state.whim_draft_player_picks_remaining.values())
+
+        while len(full_draft_turn_order) < total_picks_to_make:
+            current_pass_order = temp_draft_order_players if draft_direction_forward else reversed(temp_draft_order_players)
+            for player_idx in current_pass_order:
+                if picks_made_by_player[player_idx] < self.game_state.whim_draft_player_picks_remaining[player_idx]:
+                    full_draft_turn_order.append(player_idx)
+                    picks_made_by_player[player_idx] +=1
+            draft_direction_forward = not draft_direction_forward # Snake
+
+        self.game_state.whim_draft_order = full_draft_turn_order
+        self.game_state.whim_draft_current_picker_idx_in_order = 0
+        self.game_state.whim_draft_active = True
+        self.game_state.crowd_deck = [] # Clear existing crowd deck for new draft
+        self.game_state.game_log.append(f"Whim draft order: {[self.game_state.players[i].name for i in self.game_state.whim_draft_order]}")
+        return self.request_next_whim_draft_pick()
+
+    def request_next_whim_draft_pick(self) -> Optional[Tuple[Player, List[WhimCard], int]]:
+        """
+        Determines the next player and options for a Whim draft pick.
+        Returns (player, options, pick_num_for_player) or None if draft is over.
+        This method is called by the web server to get info for the client.
+        """
+        gs = self.game_state
+        if not gs.whim_draft_active or gs.whim_draft_current_picker_idx_in_order >= len(gs.whim_draft_order):
+            gs.whim_draft_active = False
+            gs.whim_draft_options_sent_to_player = []
+            if gs.crowd_deck: # Only shuffle if cards were drafted
+                 random.shuffle(gs.crowd_deck)
+            gs.game_log.append(f"Whim Draft Concluded. Crowd Deck has {len(gs.crowd_deck)} cards.")
+            return None
+
+        current_player_actual_idx = gs.whim_draft_order[gs.whim_draft_current_picker_idx_in_order]
+        player = gs.players[current_player_actual_idx]
+
+        # Calculate pick number for this player (e.g., their 1st, 2nd, or 3rd pick)
+        # This requires knowing how many picks this player has made so far in this draft.
+        # We can count occurrences of current_player_actual_idx in whim_draft_order up to current_picker_idx_in_order
+        pick_num_for_player = sum(1 for i in range(gs.whim_draft_current_picker_idx_in_order + 1) if gs.whim_draft_order[i] == current_player_actual_idx)
+
+        # Replenish whim_deck_source if empty
+        if not gs.whim_deck_source and gs.whim_discard_pile:
+            gs.game_log.append("Whim source deck empty, reshuffling discard pile.")
+            gs.whim_deck_source.extend(gs.whim_discard_pile)
+            gs.whim_discard_pile = []
+            random.shuffle(gs.whim_deck_source)
+
+        if not gs.whim_deck_source:
+            gs.game_log.append(f"Whim source deck depleted. {player.name} cannot make pick {pick_num_for_player}.")
+            gs.whim_draft_current_picker_idx_in_order += 1 # Skip this player's turn
+            return self.request_next_whim_draft_pick() # Try for next player
+
+        num_options_to_show = min(len(gs.whim_deck_source), 3)
+        options = gs.whim_deck_source[:num_options_to_show]
+
+        if not options:
+            gs.game_log.append(f"No Whim cards available for {player.name} to draft for pick {pick_num_for_player}.")
+            gs.whim_draft_current_picker_idx_in_order += 1 # Skip
+            return self.request_next_whim_draft_pick()
+
+        gs.whim_draft_options_sent_to_player = options # Store options for processing choice
+        return player, options, pick_num_for_player
+
+    def process_whim_draft_pick(self, player: Player, chosen_card_index: int) -> bool:
+        """
+        Processes a player's Whim draft choice.
+        Assumes chosen_card_index is valid for options previously sent.
+        """
+        gs = self.game_state
+        if not gs.whim_draft_active or not gs.whim_draft_options_sent_to_player:
+            gs.game_log.append(f"Error: Whim draft not active or no options were sent to {player.name}.")
+            return False
+
+        options = gs.whim_draft_options_sent_to_player
+        pick_num_for_player = sum(1 for i in range(gs.whim_draft_current_picker_idx_in_order + 1) if gs.whim_draft_order[i] == gs.players.index(player))
 
 
-                    # Replenish whim_deck_source if empty and discard has cards
-                    if not self.game_state.whim_deck_source and self.game_state.whim_discard_pile:
-                        self.game_state.game_log.append("Whim source deck empty, reshuffling discard pile.")
-                        self.game_state.whim_deck_source.extend(self.game_state.whim_discard_pile)
-                        self.game_state.whim_discard_pile = []
-                        random.shuffle(self.game_state.whim_deck_source)
+        if 0 <= chosen_card_index < len(options):
+            chosen_card = options[chosen_card_index]
+            if chosen_card in gs.whim_deck_source: # Ensure card is still in source (it should be)
+                gs.whim_deck_source.remove(chosen_card)
+                gs.crowd_deck.append(chosen_card)
+                gs.game_log.append(f"{player.name} drafted Whim card (Pick {pick_num_for_player}): {chosen_card.name}.")
+            else: # Should not happen if options are from source
+                gs.game_log.append(f"Error: Card {chosen_card.name} not found in source deck for {player.name}'s pick.")
+                # Potentially auto-pick first available if error, or just fail the pick
+        else:
+            gs.game_log.append(f"{player.name} made an invalid choice or passed on pick {pick_num_for_player}. No card drafted for this pick.")
+            # If passing is allowed and means no card, this is fine. If a card must be picked, this is an error.
+            # For now, passing means no card drafted for this specific pick.
 
-                    if not self.game_state.whim_deck_source:
-                        self.game_state.game_log.append(f"Whim source deck depleted. {player.name} cannot make pick {actual_pick_number_for_player}.")
-                        player_picks_remaining[player_idx] = 0 # No more picks for them
-                        continue
+        gs.whim_draft_options_sent_to_player = [] # Clear stored options
+        gs.whim_draft_current_picker_idx_in_order += 1
+        return True
 
-                    num_options_to_show = min(len(self.game_state.whim_deck_source), 3)
-                    options = self.game_state.whim_deck_source[:num_options_to_show]
-
-                    if not options:
-                        self.game_state.game_log.append(f"No Whim cards available for {player.name} to draft for pick {actual_pick_number_for_player}.")
-                        player_picks_remaining[player_idx] = 0
-                        continue
-
-                    chosen_card_index = get_player_draft_choice_cb(player, options, actual_pick_number_for_player)
-
-                    if 0 <= chosen_card_index < len(options):
-                        chosen_card = self.game_state.whim_deck_source.pop(self.game_state.whim_deck_source.index(options[chosen_card_index]))
-                        drafted_whims_this_round.append(chosen_card)
-                        self.game_state.game_log.append(f"{player.name} drafted Whim card (Pick {actual_pick_number_for_player}): {chosen_card.name}.")
-                    else:
-                        self.game_state.game_log.append(f"{player.name} made an invalid choice or passed on pick {actual_pick_number_for_player}.")
-
-                    player_picks_remaining[player_idx] -= 1
-
-        # Old draft_turns logic removed as it's replaced by player_picks_remaining loop
-        # for turn_info in draft_turns:
-        #     player_index = turn_info['player_index']
-        #     pick_number = turn_info['pick_number'] # This 'pick_number' was the source of the NameError if this block was active
-        #     player = self.game_state.players[player_index]
-
-            # Replenish whim_deck_source if empty and discard has cards
-            # if not self.game_state.whim_deck_source and self.game_state.whim_discard_pile:
-            #     self.game_state.game_log.append("Whim source deck empty, reshuffling discard pile.")
-            #    self.game_state.whim_deck_source.extend(self.game_state.whim_discard_pile) # This block was incorrectly indented and duplicated part of above logic
-            #    self.game_state.whim_discard_pile = []
-            #    random.shuffle(self.game_state.whim_deck_source)
-
-            # if not self.game_state.whim_deck_source: # This check was also duplicated
-            #    self.game_state.game_log.append(f"Whim source deck depleted. {player.name} cannot make pick {pick_number}.") # And would use wrong pick_number
-            #    continue
-
-            # num_options_to_show = min(len(self.game_state.whim_deck_source), 3)
-            # options = self.game_state.whim_deck_source[:num_options_to_show]
-
-            # if not options:
-            #    self.game_state.game_log.append(f"No Whim cards available for {player.name} to draft for pick {pick_number}.")
-            #    continue
-
-            # chosen_card_index = get_player_draft_choice_cb(player, options, pick_number) # Call with incorrect pick_number
-
-            # if 0 <= chosen_card_index < len(options):
-            #    chosen_card = self.game_state.whim_deck_source.pop(self.game_state.whim_deck_source.index(options[chosen_card_index]))
-            #    drafted_whims_this_round.append(chosen_card)
-            #    self.game_state.game_log.append(f"{player.name} drafted Whim card (Pick {pick_number}): {chosen_card.name}.")
-            # else:
-            #    self.game_state.game_log.append(f"{player.name} made an invalid choice or passed on pick {pick_number}.")
-
-
-        self.game_state.crowd_deck.extend(drafted_whims_this_round)
-        random.shuffle(self.game_state.crowd_deck)
-        self.game_state.game_log.append(f"Crowd Deck now has {len(self.game_state.crowd_deck)} cards after draft.")
 
     def ops_phase(self, get_player_action_choice_cb):
         """

@@ -74,6 +74,14 @@ class GameState:
         self.active_threshold_effects: set[str] = set() # Stores keys of active non-event threshold effects
         self.round_sales_to_eco_elites: set[str] = set() # Player names who sold to Eco-Elites this round
 
+        # Whim Draft State
+        self.whim_draft_active: bool = False
+        self.whim_draft_player_picks_remaining: Dict[int, int] = {} # player_idx: picks_left
+        self.whim_draft_order: List[int] = [] # List of player indices in order of current pick
+        self.whim_draft_current_picker_idx_in_order: int = 0 # Index into whim_draft_order
+        self.whim_draft_options_sent_to_player: List[WhimCard] = []
+
+
         # Store base definitions for resetting demand segments
         self.demand_segments_base_definitions: Dict[str, Dict] = {
             name: {'base_demand': seg.current_demand, 'base_price': seg.current_price}
