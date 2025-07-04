@@ -1,0 +1,39 @@
+name: Python Unit Tests
+
+on:
+  push:
+    branches: [ main ] # Or your primary branch, e.g., master
+  pull_request:
+    branches: [ main ] # Or your primary branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"] # Test against multiple Python versions
+
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run unit tests
+      run: |
+        python -m unittest discover -s tests
+      # Ensure PYTHONPATH is set if your project structure requires it for imports
+      # By default, actions/checkout places the repo root in the GITHUB_WORKSPACE,
+      # and python commands run from there usually find packages correctly.
+      # If not, you might need:
+      # env:
+      #   PYTHONPATH: ${{ github.workspace }}
