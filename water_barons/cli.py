@@ -1,5 +1,5 @@
 from water_barons.game_logic import GameLogic
-from water_barons.game_entities import FacilityCard, DistributionCard, UpgradeCard
+from water_barons.game_entities import FacilityCard, DistributionCard, UpgradeCard, WhimCard
 
 class CLI:
     """Command Line Interface for playing Water Barons."""
@@ -633,8 +633,6 @@ class CLI:
                         self.game_logic.game_state.game_log.append(f"{player.name} will draw an extra Whim card next round due to Drone Drops.")
                 else:
                     print("Invalid quantity.")
-                else:
-                    print("Invalid demand choice.")
             except ValueError:
                 print("Invalid input. Please enter numbers.")
             except Exception as e:
@@ -672,11 +670,10 @@ class CLI:
 
         # Game Over
         print("\n--- GAME OVER ---")
-            print("Threshold check complete. Global events (if any) triggered.")
-            if gs.uninhaitable:
-                print("Planet has become Uninhabitable!")
-                break
-
+        print("Threshold check complete. Global events (if any) triggered.")
+        if gs.uninhaitable:
+            print("Planet has become Uninhabitable!")
+        else:
             # End of Round
             self.game_logic.reset_round_modifiers() # Reset demand etc.
             gs.round_number += 1
