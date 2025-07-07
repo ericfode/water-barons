@@ -8,17 +8,21 @@ A restless, post‑Basic‑Income humanity still needs to sip. In a stateless, a
 
 ## How to Run
 
-This is a Python-based application. Ensure you have Python 3.8+ installed.
+This project uses [uv](https://github.com/astral-sh/uv) for dependency management. Ensure you have Python 3.8+ installed and `uv` available (install with `pip install uv` if needed).
 
 1.  **Clone the repository (if applicable) or ensure all files are in the same directory structure.**
 2.  **Navigate to the root directory of the project.**
-3.  **Run the Command Line Interface (CLI):**
+3.  **Install dependencies with uv:**
     ```bash
-    python -m water_barons.cli
+    uv sync
     ```
-    *(Note: If you are in the directory containing the `water_barons` package, you might run `python water_barons/cli.py` directly, but the `-m` method is generally more robust for packages.)*
+4.  **Run the Command Line Interface (CLI):**
+    ```bash
+    uv run -- python -m water_barons.cli
+    ```
+    *(Note: If you are in the directory containing the `water_barons` package, you might run `uv run water_barons/cli.py` directly, but the `-m` method is generally more robust for packages.)*
 
-4.  **Follow the on-screen prompts to start a new game, enter player names, and play.**
+5.  **Follow the on-screen prompts to start a new game, enter player names, and play.**
 
 ## Game Overview (Simplified for CLI)
 
@@ -78,9 +82,9 @@ This CLI version is a foundational implementation of the game rules. Many aspect
 
 To run the automated tests:
 ```bash
-python -m unittest discover -s tests
+uv run -- python -m unittest discover -s tests
 ```
-This command should be run from the root directory of the project.
+This command should be run from the root directory of the project after running `uv sync` once to install dependencies.
 
 ---
 This README provides a basic guide to the current CLI version of Water Barons.
