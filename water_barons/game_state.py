@@ -1,6 +1,17 @@
 from typing import List, Dict, Optional
 import pickle
-from water_barons.game_entities import TrackColor, Player, Card, WhimCard, GlobalEventCard, DemandSegment, FacilityCard, DistributionCard, UpgradeCard
+from water_barons.game_entities import (
+    TrackColor,
+    Player,
+    Card,
+    WhimCard,
+    GlobalEventCard,
+    DemandSegment,
+    FacilityCard,
+    DistributionCard,
+    UpgradeCard,
+)
+from water_barons import game_metadata
 
 class ImpactTrack:
     """Represents one of the four global impact tracks."""
@@ -38,12 +49,13 @@ class GameState:
         self.current_player_index: int = 0
         self.round_number: int = 1
 
-        self.impact_tracks: Dict[TrackColor, ImpactTrack] = {
-            TrackColor.PINK: ImpactTrack("Microplastics (μP)", TrackColor.PINK, "Invisible glitter choking fish & fetuses"),
-            TrackColor.GREY: ImpactTrack("Carbon Intensity (CO₂e)", TrackColor.GREY, "Energy burnt desalinating & droning"),
-            TrackColor.BLUE: ImpactTrack("Depletion (DEP)", TrackColor.BLUE, "Falling aquifers & riverbeds"),
-            TrackColor.GREEN: ImpactTrack("Chemical Residue (TOX)", TrackColor.GREEN, "PFAS & cleaning reagents"),
-        }
+        # Build impact tracks from metadata
+        self.impact_tracks: Dict[TrackColor, ImpactTrack] = {}
+        for track_data in game_metadata.IMPACT_TRACKS_DATA:
+            color = TrackColor[track_data["color"]]
+            track = ImpactTrack(track_data["name"], color, track_data["flavor_text"])
+            track.max_level = track_data.get("max_level", 10)
+            self.impact_tracks[color] = track
         self._initialize_track_thresholds()
 
         self.facility_deck: List[FacilityCard] = []
@@ -55,11 +67,15 @@ class GameState:
         self.global_event_tiles_available: List[GlobalEventCard] = []
         self.global_event_tiles_active: List[GlobalEventCard] = [] # Events that have triggered
 
+        # Build demand segments from metadata
         self.demand_segments: Dict[str, DemandSegment] = {
-            "Frugalists": DemandSegment("Frugalists", 4, 1, "Cheapest litre wins"),
-            "Convenientists": DemandSegment("Convenientists", 3, 2, "Buy only if Route includes Plastic or Drone"),
-            "Eco-Elites": DemandSegment("Eco-Elites", 2, 3, "Demand μP ≤ 4 & CO₂e ≤ 5"),
-            "Connoisseurs": DemandSegment("Connoisseurs", 1, 4, "Reject TOX ≥ 7; pay +1 for Glacial source"),
+            d["name"]: DemandSegment(
+                d["name"],
+                d["base_demand"],
+                d["base_price"],
+                d["values_description"],
+            )
+            for d in game_metadata.DEMAND_SEGMENTS_DATA
         }
 
         self.aqua_futures_market_open: bool = True # Or some other mechanism
@@ -89,34 +105,20 @@ class GameState:
             for name, seg in self.demand_segments.items()
         }
         # Descriptions for threshold effects (non-Global Event static effects)
-        self.threshold_effect_descriptions: Dict[str, str] = {
-            "CO2_Level_6_Effect": "+1 CredCoin cost on all energy-heavy actions.",
-            "DEP_Level_5_Effect": "Wells output –1.",
-            "TOX_Level_7_Effect": "Connoisseur segment refuses non-filtered water.",
-        }
+        self.threshold_effect_descriptions: Dict[str, str] = (
+            game_metadata.THRESHOLD_EFFECT_DESCRIPTIONS.copy()
+        )
 
 
     def _initialize_track_thresholds(self):
-        # These are keys that map to self.threshold_effect_descriptions
-        # μP – Microplastics
-        self.impact_tracks[TrackColor.PINK].thresholds = {
-             # Level 8: Microplastic Revelation Global Event (handled by GlobalEventCard trigger)
-        }
-        # CO₂e – Carbon Intensity
-        self.impact_tracks[TrackColor.GREY].thresholds = {
-            6: "CO2_Level_6_Effect",
-            # Level 9: Heatwave Event (handled by GlobalEventCard trigger)
-        }
-        # DEP – Depletion
-        self.impact_tracks[TrackColor.BLUE].thresholds = {
-            5: "DEP_Level_5_Effect",
-            # Level 8: Dustbowl Event (handled by GlobalEventCard trigger)
-        }
-        # TOX – Chemical Residue
-        self.impact_tracks[TrackColor.GREEN].thresholds = {
-            7: "TOX_Level_7_Effect",
-            # Level 10: Mass Recall (handled by GlobalEventCard trigger)
-        }
+        """Populate threshold dictionaries for each impact track from metadata."""
+        for track_data in game_metadata.IMPACT_TRACKS_DATA:
+            color = TrackColor[track_data["color"]]
+            thresholds = {
+                int(t["level"]): t["effect_key"]
+                for t in track_data.get("thresholds", [])
+            }
+            self.impact_tracks[color].thresholds = thresholds
 
     def get_current_player(self) -> Player:
         return self.players[self.current_player_index]
