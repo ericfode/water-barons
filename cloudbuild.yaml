@@ -1,7 +1,12 @@
 steps:
   # Step 1: Install Python dependencies
-  - name: 'gcr.io/cloud-builders/pip'
-    args: ['install', '-r', 'requirements.txt', '--user']
+  - name: 'python:3.12-slim'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+          pip install uv
+          uv sync
     id: 'Install Dependencies'
 
   # Step 2: Run unit tests
@@ -9,9 +14,12 @@ steps:
   # Google provides official Python images on gcr.io/google-appengine/python
   # or you can use standard python images like 'python:3.9' (or your project's version)
   # For simplicity, let's use a readily available Python image.
-  - name: 'python:3.10-slim' # Or your specific Python version, e.g., python:3.12-slim
-    entrypoint: 'python'
-    args: ['-m', 'unittest', 'discover', '-s', 'tests']
+  - name: 'python:3.12-slim'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+          uv run -- python -m unittest discover -s tests
     id: 'Run Unit Tests'
     env:
       - 'PYTHONPATH=.:${PYTHONPATH}' # Ensure modules in the current directory are discoverable
