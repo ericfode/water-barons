@@ -1,5 +1,6 @@
 from water_barons.game_logic import GameLogic
 from water_barons.game_entities import FacilityCard, DistributionCard, UpgradeCard, WhimCard
+from water_barons.cards import ACTIONS_DATA
 
 class CLI:
     """Command Line Interface for playing Water Barons."""
@@ -126,48 +127,46 @@ class CLI:
         self._display_player_dashboard(player)
         print(f"\n{player.name}, choose Action {action_num} of 2:")
         print("Available actions:")
-        print("1. Sink/Source (Build Facility)")
-        print("2. Flow (Produce Water)")
-        print("3. Route (Build Distribution)")
-        print("4. Tweak (Add Upgrade/Mitigation)")
-        print("5. Speculate (Buy/Sell Futures)")
-        print("6. Spin (Marketing - Not Implemented Yet)")
-        print("7. Pass Action")
-        print("8. View Full Game State")
+        for idx, action in enumerate(ACTIONS_DATA, start=1):
+            desc = action.get("description", "")
+            if desc:
+                print(f"{idx}. {action['name']} - {desc}")
+            else:
+                print(f"{idx}. {action['name']}")
+        pass_idx = len(ACTIONS_DATA) + 1
+        view_idx = pass_idx + 1
+        print(f"{pass_idx}. Pass Action")
+        print(f"{view_idx}. View Full Game State")
 
         while True:
             try:
-                choice = input("Enter action number (1-8): ").strip()
-                if choice == '1':
-                    self._cli_action_build_facility(player)
-                    break
-                elif choice == '2':
-                    self._cli_action_produce_water(player)
-                    break
-                elif choice == '3':
-                    self._cli_action_build_distribution(player)
-                    break
-                elif choice == '4':
-                    self._cli_action_tweak_upgrade(player)
-                    break
-                elif choice == '5':
-                    self._cli_action_speculate(player)
-                    break
-                elif choice == '6':
-                    print("Spin/Marketing action is not yet implemented.")
-                    # self.game_logic.action_spin_marketing(player, "", "") # Placeholder call
-                    break
-                elif choice == '7':
+                prompt = f"Enter action number (1-{view_idx}): "
+                choice = input(prompt).strip()
+                if choice == str(pass_idx):
                     print(f"{player.name} passes action {action_num}.")
                     self.game_logic.game_state.game_log.append(f"{player.name} passed action {action_num}.")
                     break
-                elif choice == '8':
+                elif choice == str(view_idx):
                     self._display_game_state() # Show full state then re-prompt
                     self._display_player_dashboard(player) # Show player state again
                     print(f"\n{player.name}, choose Action {action_num} of 2 (after viewing state):")
-                    # Re-print action options
-                    print("1. Sink/Source (Build Facility)... 7. Pass, 8. View Full Game State")
+                    for idx, action in enumerate(ACTIONS_DATA, start=1):
+                        desc = action.get("description", "")
+                        if desc:
+                            print(f"{idx}. {action['name']} - {desc}")
+                        else:
+                            print(f"{idx}. {action['name']}")
+                    print(f"{pass_idx}. Pass Action\n{view_idx}. View Full Game State")
                     continue # Re-loop for action choice
+                elif choice.isdigit() and 1 <= int(choice) <= len(ACTIONS_DATA):
+                    action_idx = int(choice) - 1
+                    action_method = ACTIONS_DATA[action_idx]['method']
+                    method_name = f"_cli_{action_method}"
+                    if hasattr(self, method_name):
+                        getattr(self, method_name)(player)
+                    else:
+                        print(f"Action {action_method} not implemented.")
+                    break
                 else:
                     print("Invalid choice. Please try again.")
             except Exception as e:
