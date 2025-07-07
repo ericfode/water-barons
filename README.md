@@ -30,6 +30,15 @@ This project uses [uv](https://github.com/astral-sh/uv) for dependency managemen
     print‑and‑play version of the game.  Set the environment variable
     `WATER_BARONS_DATA_FILE` to load card data from a different path.
 
+6.  **Generate a Print & Play File:**
+    Run the following command to create an HTML file containing all card
+    information for easy printing:
+    ```bash
+    uv run python -m water_barons.print_and_play my_print_and_play.html
+    ```
+    Open `my_print_and_play.html` in a browser and print it to have a
+    physical copy of the cards.
+
 ## Game Overview (Simplified for CLI)
 
 The game proceeds in rounds, each consisting of several phases:
