@@ -1,0 +1,15 @@
+{
+  "name": "water-barons-boardgame",
+  "version": "1.0.0",
+  "description": "Water Barons web application powered by boardgame.io",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "boardgame.io": "^1.5.1",
+    "express": "^4.18.2",
+    "toml": "^3.0.0"
+  }
+}

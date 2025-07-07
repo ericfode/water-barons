@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Water Barons (boardgame.io)</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    .card { border: 1px solid #ccc; padding: 4px 8px; margin: 2px 0; }
+  </style>
+</head>
+<body>
+  <h1>Water Barons (boardgame.io demo)</h1>
+  <div id="root"></div>
+
+  <!-- Use Skypack CDN to pull boardgame.io and React in a quick & dirty way -->
+  <script type="module">
+    import React, { useState } from 'https://cdn.skypack.dev/react@18.2.0';
+    import ReactDOM from 'https://cdn.skypack.dev/react-dom@18.2.0/client';
+    import { Client } from 'https://cdn.skypack.dev/boardgame.io/client';
+    import { WaterBaronsGame } from './WaterBaronsGameClient.js';
+
+    const WaterBaronsClient = Client({
+      game: WaterBaronsGame,
+      numPlayers: 2,
+      multiplayer: { server: `${location.protocol}//${location.hostname}:${location.port}` },
+    });
+
+    function App() {
+      const [state, setState] = useState(null);
+      const [client] = useState(() => {
+        const c = new WaterBaronsClient({ playerID: '0' });
+        c.subscribe(() => setState(c.getState()));
+        c.start();
+        return c;
+      });
+
+      if (!state) return React.createElement('div', null, 'Connecting...');
+
+      const player = state.G.players[0];
+
+      return React.createElement('div', null, [
+        React.createElement('h3', { key: 'title' }, `Round ${state.G.round}`),
+        React.createElement('p', { key: 'cred' }, `CredCoin: ${player.credCoin}`),
+        React.createElement('h4', { key: 'facTitle' }, 'Facilities'),
+        React.createElement('div', { key: 'fac' }, player.facilities.map((f, idx) => React.createElement('div', { className: 'card', key: idx }, f.name))),
+        React.createElement('button', {
+          key: 'btn',
+          onClick: () => client.moves.buildFacility('Glacial Tap'),
+        }, 'Build Glacial Tap'),
+      ]);
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
+</body>
+</html>

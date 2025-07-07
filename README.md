@@ -101,6 +101,27 @@ uv run -- python -m unittest discover -s tests
 ```
 This command should be run from the root directory of the project after running `uv sync` once to install dependencies.
 
+## Running the BoardGame.io Web App (New)
+
+The original Flask webapp has been superseded by a BoardGame.io implementation that reads all game metadata from the existing TOML files.
+
+1. Enter the `webapp` directory and install the Node dependencies:
+
+```bash
+cd webapp
+npm install
+```
+
+2. Start the BoardGame.io server:
+
+```bash
+npm start
+```
+
+This launches both the BoardGame.io game server **and** a small Express static server for the client. Visit <http://localhost:8000> in your browser to play the Water Barons demo.
+
+The server automatically loads `water_barons/game_metadata.toml` and `water_barons/game_content.toml` at startup, so any changes to those files will be reflected in-game after a restart.
+
 ---
 This README provides a basic guide to the current CLI version of Water Barons.
 The game logic is based on the detailed design document provided.
