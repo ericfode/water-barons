@@ -18,7 +18,7 @@ socketio = SocketIO(app, async_mode='eventlet')
 # Global game instance - for simplicity in this prototype.
 # In a multi-game or multi-user scenario, this would need to be managed per session/game room.
 game_instance: Optional[GameLogic] = None
-# To store which SocketIO session ID belongs to which player (index or name)
+# Mapping from player name to SocketIO session ID
 player_sessions: Dict[str, str] = {}
 
 
@@ -28,11 +28,11 @@ def index():
     return render_template('index.html')
 
 def get_player_id_from_sid(sid):
-    # Simple lookup, assuming player_sessions is populated
-    for player_id, session_id in player_sessions.items():
+    """Return the player name associated with the given session ID."""
+    for player_name, session_id in player_sessions.items():
         if session_id == sid:
-            return player_id
-    return None # Or a default/observer ID
+            return player_name
+    return None  # Unknown session
 
 def serialize_card(card): # Add type hint for card later e.g. card: Card
     if not card:
@@ -130,17 +130,14 @@ def handle_connect():
     # This is a very basic way to assign players. Needs improvement for robustness.
     assigned_player_id = None
     if len(player_sessions) < num_expected_players:
-        # Find the first unassigned player name that doesn't have a session ID yet
+        # Find the first unassigned player name
         for p_idx, p_name in enumerate(game_instance.game_state.players):
-            if p_name not in player_sessions.values(): # Check if name is already taken by a session value
-                 # Check if this player_name (key) is already in player_sessions pointing to another sid
-                is_name_key_taken = any(key_name == p_name for key_name in player_sessions.keys())
-                if not is_name_key_taken:
-                    player_sessions[request.sid] = p_name # Store sid -> player_name
-                    assigned_player_id = p_name
-                    emit('assign_player_id', {'playerId': p_name, 'playerIndex': p_idx })
-                    print(f"Assigned {p_name} (P{p_idx+1}) to session {request.sid}")
-                    break
+            if p_name not in player_sessions:
+                player_sessions[p_name] = request.sid  # store player -> sid
+                assigned_player_id = p_name
+                emit('assign_player_id', {'playerId': p_name, 'playerIndex': p_idx })
+                print(f"Assigned {p_name} (P{p_idx+1}) to session {request.sid}")
+                break
 
     if not assigned_player_id and len(player_sessions) >= num_expected_players:
          emit('message', {'data': 'Game is full. Connected as observer.'})
@@ -155,9 +152,11 @@ def handle_disconnect():
     global player_sessions
     print(f'Client disconnected: {request.sid}')
     # Remove player from session mapping if they were assigned
-    if request.sid in player_sessions:
-        player_name = player_sessions.pop(request.sid)
-        print(f"Player {player_name} from session {request.sid} removed.")
+    for name, sid in list(player_sessions.items()):
+        if sid == request.sid:
+            player_sessions.pop(name)
+            print(f"Player {name} from session {request.sid} removed.")
+            break
     # TODO: Handle game state if a player disconnects mid-game (e.g., pause, AI takeover, etc.)
 
 # --- Whim Draft Handlers ---
@@ -165,7 +164,7 @@ def handle_disconnect():
 def on_start_whim_draft():
     global game_instance
     sid = request.sid
-    player_name = player_sessions.get(sid)
+    player_name = get_player_id_from_sid(sid)
 
     if not game_instance or not player_name:
         emit('error_message', {'message': 'Game or player not initialized.'}, room=sid)
@@ -180,7 +179,7 @@ def on_start_whim_draft():
     next_pick_info = game_instance.request_next_whim_draft_pick()
     if next_pick_info:
         player_to_pick, options, pick_num = next_pick_info
-        target_sid = next((s for s, name in player_sessions.items() if name == player_to_pick.name), None)
+        target_sid = player_sessions.get(player_to_pick.name)
         if target_sid:
             serialized_options = [serialize_card(c) for c in options]
             emit('whim_draft_options', {'player_name': player_to_pick.name, 'options': serialized_options, 'pick_num': pick_num}, room=target_sid)
@@ -193,7 +192,7 @@ def on_start_whim_draft():
 def on_submit_whim_draft_choice(data):
     global game_instance
     sid = request.sid
-    player_name = player_sessions.get(sid)
+    player_name = get_player_id_from_sid(sid)
 
     if not game_instance or not player_name or not game_instance.game_state.whim_draft_active:
         emit('error_message', {'message': 'Cannot submit draft choice: Draft not active or player invalid.'}, room=sid)
@@ -217,7 +216,7 @@ def on_submit_whim_draft_choice(data):
         next_pick_info = game_instance.request_next_whim_draft_pick()
         if next_pick_info:
             player_to_pick, options, pick_num = next_pick_info
-            target_sid = next((s for s, name in player_sessions.items() if name == player_to_pick.name), None)
+            target_sid = player_sessions.get(player_to_pick.name)
             if target_sid:
                 serialized_options = [serialize_card(c) for c in options]
                 emit('whim_draft_options', {'player_name': player_to_pick.name, 'options': serialized_options, 'pick_num': pick_num}, room=target_sid)
@@ -239,7 +238,7 @@ def handle_player_action(data):
         emit('error_message', {'message': 'Game not initialized.'}, room=sid)
         return
 
-    player_name_from_session = player_sessions.get(sid)
+    player_name_from_session = get_player_id_from_sid(sid)
     if not player_name_from_session:
         emit('error_message', {'message': 'You are not recognized as a player in this game.'}, room=sid)
         return
