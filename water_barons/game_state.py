@@ -1,4 +1,5 @@
 from typing import List, Dict, Optional
+import pickle
 from water_barons.game_entities import TrackColor, Player, Card, WhimCard, GlobalEventCard, DemandSegment, FacilityCard, DistributionCard, UpgradeCard
 
 class ImpactTrack:
@@ -160,6 +161,17 @@ class GameState:
     def __repr__(self):
         return (f"GameState(Round: {self.round_number}, Player: {self.get_current_player().name}, "
                 f"Tracks: {[str(t) for t in self.impact_tracks.values()]})")
+
+    def save_to_file(self, filepath: str) -> None:
+        """Serialize the game state to a file using pickle."""
+        with open(filepath, 'wb') as f:
+            pickle.dump(self, f)
+
+    @staticmethod
+    def load_from_file(filepath: str) -> 'GameState':
+        """Load a game state previously saved with `save_to_file`."""
+        with open(filepath, 'rb') as f:
+            return pickle.load(f)
 
 if __name__ == '__main__':
     gs = GameState(num_players=2, player_names=["Alice", "Bob"])
