@@ -1,4 +1,6 @@
 import unittest
+import tempfile
+import os
 from water_barons.game_state import GameState, ImpactTrack
 from water_barons.game_entities import TrackColor, Player, GlobalEventCard
 from water_barons.cards import get_all_global_event_tiles # To get some sample events
@@ -100,6 +102,18 @@ class TestGameState(unittest.TestCase):
         self.assertEqual(self.gs.impact_tracks[TrackColor.GREY].thresholds[6], "CO2_Level_6_Effect")
         self.assertIn(5, self.gs.impact_tracks[TrackColor.BLUE].thresholds) # DEP Level 5
         self.assertEqual(self.gs.impact_tracks[TrackColor.BLUE].thresholds[5], "DEP_Level_5_Effect")
+
+    def test_save_and_load(self):
+        self.gs.round_number = 3
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            path = tmp.name
+        try:
+            self.gs.save_to_file(path)
+            loaded = GameState.load_from_file(path)
+            self.assertEqual(loaded.round_number, 3)
+            self.assertEqual(len(loaded.players), 2)
+        finally:
+            os.remove(path)
 
 
 if __name__ == '__main__':
