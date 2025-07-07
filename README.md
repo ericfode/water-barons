@@ -20,6 +20,12 @@ This is a Python-based application. Ensure you have Python 3.8+ installed.
 
 4.  **Follow the on-screen prompts to start a new game, enter player names, and play.**
 
+5.  **Customize Card Data (Optional):**
+    All facilities, upgrades, whims, and player actions are defined in
+    `water_barons/game_content.toml`. Edit this file to tweak values for a
+    print‑and‑play version of the game.  Set the environment variable
+    `WATER_BARONS_DATA_FILE` to load card data from a different path.
+
 ## Game Overview (Simplified for CLI)
 
 The game proceeds in rounds, each consisting of several phases:
