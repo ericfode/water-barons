@@ -186,6 +186,20 @@ class GameLogic:
         gs.whim_draft_current_picker_idx_in_order += 1
         return True
 
+    def whim_draft_phase(self, get_player_draft_choice_cb):
+        """Runs the interactive Whim draft using the provided callback."""
+        next_pick = self.initiate_whim_draft()
+        while next_pick:
+            player, options, pick_num = next_pick
+            try:
+                choice = get_player_draft_choice_cb(player, options, pick_num)
+            except Exception:
+                choice = -1
+            if choice is None:
+                choice = -1
+            self.process_whim_draft_pick(player, choice)
+            next_pick = self.request_next_whim_draft_pick()
+
 
     def ops_phase(self, get_player_action_choice_cb):
         """
