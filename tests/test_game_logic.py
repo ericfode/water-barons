@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, call
 from water_barons.game_logic import GameLogic
 from water_barons.game_state import GameState
-from water_barons.game_entities import Player, TrackColor, WhimCard
+from water_barons.game_entities import Player, TrackColor, WhimCard, GlobalEventCard
 from water_barons.cards import get_all_whim_cards
 
 

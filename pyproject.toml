@@ -6,4 +6,5 @@ dependencies = [
     "eventlet>=0.30.0",
     "flask>=3.0.0",
     "flask-socketio>=5.0.0",
+    "pytest>=7.0",
 ]
