@@ -183,7 +183,9 @@ class TestGameLogicPhases(unittest.TestCase):
         event_card = self.game.game_state.global_event_tiles_available[0]
         event_card.trigger_threshold = 5
         track_to_trigger = event_card.trigger_track
-        self.game.game_state.impact_tracks[track_to_trigger].level = 5 # Set level to trigger
+        # Use a level higher than the threshold to avoid immediate deactivation
+        # for events like Aquifer Collapse that end if the track is too low.
+        self.game.game_state.impact_tracks[track_to_trigger].level = 7
 
         self.game.threshold_check_phase()
 
