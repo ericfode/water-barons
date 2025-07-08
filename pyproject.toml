@@ -7,4 +7,5 @@ dependencies = [
     "flask>=3.0.0",
     "flask-socketio>=5.0.0",
     "pytest>=7.0",
+    "hypothesis>=6.0",
 ]
