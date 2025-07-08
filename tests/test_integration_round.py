@@ -18,6 +18,10 @@ class TestIntegrationRound(unittest.TestCase):
 
         # --- Ops Phase ---
         p1, p2 = game.game_state.players
+        # Ensure players have enough credits for all actions regardless of
+        # which cards were drawn from the shuffled decks
+        p1.cred_coin = 20
+        p2.cred_coin = 20
         facility = game.game_state.facility_deck[0]
         route = game.game_state.distribution_deck[0]
         upgrade = game.game_state.upgrade_deck[0]
