@@ -39,6 +39,14 @@ This project uses [uv](https://github.com/astral-sh/uv) for dependency managemen
     Open `my_print_and_play.html` in a browser and print it to have a
     physical copy of the cards.
 
+7.  **Export Data for Tabletop Simulator:**
+    Run the exporter to generate a JSON file suitable for building a
+    Tabletop Simulator mod:
+    ```bash
+    uv run python -m water_barons.tabletop_simulator
+    ```
+    This command writes `tabletop_export.json` in the project root.
+
 ## Game Overview (Simplified for CLI)
 
 The game proceeds in rounds, each consisting of several phases:
