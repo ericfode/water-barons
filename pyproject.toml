@@ -3,9 +3,10 @@ name = "water-barons"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "eventlet>=0.30.0",
-    "flask>=3.0.0",
-    "flask-socketio>=5.0.0",
     "pytest>=7.0",
     "hypothesis>=6.0",
+    "hyperdiv"
 ]
+
+[project.scripts]
+run = "water_barons.hyperdiv_app:main"
