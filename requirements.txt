@@ -1,7 +1,6 @@
-Flask>=3.0.0
-Flask-SocketIO>=5.0.0
-eventlet>=0.30.0
+hyperdiv
 # For property-based testing
+hypothesis>=6.0
 hypothesis>=6.0
 # Add other direct dependencies if any were explicitly installed and are not sub-dependencies.
 # Werkzeug, Jinja2, click, itsdangerous, MarkupSafe are dependencies of Flask.
