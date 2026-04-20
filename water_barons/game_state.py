@@ -1,9 +1,9 @@
+from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 import pickle
 from water_barons.game_entities import (
     TrackColor,
     Player,
-    Card,
     WhimCard,
     GlobalEventCard,
     DemandSegment,
@@ -13,16 +13,16 @@ from water_barons.game_entities import (
 )
 from water_barons import game_metadata
 
+@dataclass
 class ImpactTrack:
     """Represents one of the four global impact tracks."""
-    def __init__(self, name: str, color: TrackColor, flavor_text: str):
-        self.name = name
-        self.color = color
-        self.flavor_text = flavor_text
-        self.level: int = 0
-        self.max_level: int = 10
-        self.thresholds: Dict[int, str] = {} # e.g., {6: "CO2_Level_6_Effect", 9: "Heatwave_Event_Trigger"}
-        self.global_event_on_max: Optional[str] = None # Name of global event if this track maxes out
+    name: str
+    color: TrackColor
+    flavor_text: str
+    level: int = 0
+    max_level: int = 10
+    thresholds: Dict[int, str] = field(default_factory=dict)  # e.g. {6: "CO2_Level_6_Effect"}
+    global_event_on_max: Optional[str] = None
 
     def add_impact(self, amount: int) -> bool:
         """Adds impact to the track. Returns True if a threshold was crossed."""
@@ -49,13 +49,7 @@ class GameState:
         self.current_player_index: int = 0
         self.round_number: int = 1
 
-        # Build impact tracks from metadata
-        self.impact_tracks: Dict[TrackColor, ImpactTrack] = {}
-        for track_data in game_metadata.IMPACT_TRACKS_DATA:
-            color = TrackColor[track_data["color"]]
-            track = ImpactTrack(track_data["name"], color, track_data["flavor_text"])
-            track.max_level = track_data.get("max_level", 10)
-            self.impact_tracks[color] = track
+        self.impact_tracks: Dict[TrackColor, ImpactTrack] = self._build_impact_tracks()
         self._initialize_track_thresholds()
 
         self.facility_deck: List[FacilityCard] = []
@@ -67,19 +61,10 @@ class GameState:
         self.global_event_tiles_available: List[GlobalEventCard] = []
         self.global_event_tiles_active: List[GlobalEventCard] = [] # Events that have triggered
 
-        # Build demand segments from metadata
-        self.demand_segments: Dict[str, DemandSegment] = {
-            d["name"]: DemandSegment(
-                d["name"],
-                d["base_demand"],
-                d["base_price"],
-                d["values_description"],
-            )
-            for d in game_metadata.DEMAND_SEGMENTS_DATA
-        }
+        self.demand_segments: Dict[str, DemandSegment] = self._build_demand_segments()
 
         self.aqua_futures_market_open: bool = True # Or some other mechanism
-        self.uninhaitable: bool = False
+        self.uninhabitable: bool = False
         self.game_log: List[str] = [] # For recording significant events
         self.game_wide_counters: Dict[str, int] = {
             "GlacialTap_built": 0,
@@ -109,6 +94,37 @@ class GameState:
             game_metadata.THRESHOLD_EFFECT_DESCRIPTIONS.copy()
         )
 
+    @property
+    def uninhaitable(self) -> bool:
+        """Backward-compatible alias for historical misspelling."""
+        return self.uninhabitable
+
+    @uninhaitable.setter
+    def uninhaitable(self, value: bool) -> None:
+        self.uninhabitable = value
+
+    def _build_impact_tracks(self) -> Dict[TrackColor, ImpactTrack]:
+        tracks: Dict[TrackColor, ImpactTrack] = {}
+        for track_data in game_metadata.IMPACT_TRACKS_DATA:
+            color = TrackColor[track_data["color"]]
+            tracks[color] = ImpactTrack(
+                name=track_data["name"],
+                color=color,
+                flavor_text=track_data["flavor_text"],
+                max_level=track_data.get("max_level", 10),
+            )
+        return tracks
+
+    def _build_demand_segments(self) -> Dict[str, DemandSegment]:
+        return {
+            d["name"]: DemandSegment(
+                d["name"],
+                d["base_demand"],
+                d["base_price"],
+                d["values_description"],
+            )
+            for d in game_metadata.DEMAND_SEGMENTS_DATA
+        }
 
     def _initialize_track_thresholds(self):
         """Populate threshold dictionaries for each impact track from metadata."""
@@ -156,7 +172,7 @@ class GameState:
                 maxed_out_tracks += 1
 
         if maxed_out_tracks >= 3:
-            self.uninhaitable = True
+            self.uninhabitable = True
             self.game_log.append("PLANET UNINHABITABLE! Proceeding to Final Scoring.")
             # End game logic will be handled elsewhere
 

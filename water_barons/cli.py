@@ -2,8 +2,10 @@ from water_barons.game_logic import GameLogic
 from water_barons.game_entities import FacilityCard, DistributionCard, UpgradeCard, WhimCard
 from water_barons.cards import ACTIONS_DATA
 
+
 class CLI:
     """Command Line Interface for playing Water Barons."""
+
     def __init__(self):
         self.game_logic: GameLogic = None
 
@@ -95,6 +97,16 @@ class CLI:
         print(f"Futures Tokens: {[str(token) for token in player.futures_tokens] if player.futures_tokens else 'None'}")
         print("--- End of Dashboard ---")
 
+    def _print_action_menu(self, pass_idx: int, view_idx: int) -> None:
+        print("Available actions:")
+        for idx, action in enumerate(ACTIONS_DATA, start=1):
+            desc = action.get("description", "")
+            if desc:
+                print(f"{idx}. {action['name']} - {desc}")
+            else:
+                print(f"{idx}. {action['name']}")
+        print(f"{pass_idx}. Pass Action")
+        print(f"{view_idx}. View Full Game State")
 
     def _get_player_draft_choice(self, player, options: list[WhimCard], pick_number: int) -> int:
         """CLI callback for player to choose a Whim card during draft."""
@@ -126,17 +138,9 @@ class CLI:
         """
         self._display_player_dashboard(player)
         print(f"\n{player.name}, choose Action {action_num} of 2:")
-        print("Available actions:")
-        for idx, action in enumerate(ACTIONS_DATA, start=1):
-            desc = action.get("description", "")
-            if desc:
-                print(f"{idx}. {action['name']} - {desc}")
-            else:
-                print(f"{idx}. {action['name']}")
         pass_idx = len(ACTIONS_DATA) + 1
         view_idx = pass_idx + 1
-        print(f"{pass_idx}. Pass Action")
-        print(f"{view_idx}. View Full Game State")
+        self._print_action_menu(pass_idx, view_idx)
 
         while True:
             try:
@@ -150,13 +154,7 @@ class CLI:
                     self._display_game_state() # Show full state then re-prompt
                     self._display_player_dashboard(player) # Show player state again
                     print(f"\n{player.name}, choose Action {action_num} of 2 (after viewing state):")
-                    for idx, action in enumerate(ACTIONS_DATA, start=1):
-                        desc = action.get("description", "")
-                        if desc:
-                            print(f"{idx}. {action['name']} - {desc}")
-                        else:
-                            print(f"{idx}. {action['name']}")
-                    print(f"{pass_idx}. Pass Action\n{view_idx}. View Full Game State")
+                    self._print_action_menu(pass_idx, view_idx)
                     continue # Re-loop for action choice
                 elif choice.isdigit() and 1 <= int(choice) <= len(ACTIONS_DATA):
                     action_idx = int(choice) - 1
