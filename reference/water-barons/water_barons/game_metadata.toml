@@ -1,0 +1,56 @@
+[[demand_segments]]
+name = "Frugalists"
+base_demand = 4
+base_price = 1
+values_description = "Cheapest litre wins"
+
+[[demand_segments]]
+name = "Convenientists"
+base_demand = 3
+base_price = 2
+values_description = "Buy only if Route includes Plastic or Drone"
+
+[[demand_segments]]
+name = "Eco-Elites"
+base_demand = 2
+base_price = 3
+values_description = "Demand μP ≤ 4 & CO₂e ≤ 5"
+
+[[demand_segments]]
+name = "Connoisseurs"
+base_demand = 1
+base_price = 4
+values_description = "Reject TOX ≥ 7; pay +1 for Glacial source"
+
+[[impact_tracks]]
+color = "PINK"
+name = "Microplastics (μP)"
+flavor_text = "Invisible glitter choking fish & fetuses"
+max_level = 10
+thresholds = []
+
+[[impact_tracks]]
+color = "GREY"
+name = "Carbon Intensity (CO₂e)"
+flavor_text = "Energy burnt desalinating & droning"
+max_level = 10
+thresholds = [{level = 6, effect_key = "CO2_Level_6_Effect"}]
+
+[[impact_tracks]]
+color = "BLUE"
+name = "Depletion (DEP)"
+flavor_text = "Falling aquifers & riverbeds"
+max_level = 10
+thresholds = [{level = 5, effect_key = "DEP_Level_5_Effect"}]
+
+[[impact_tracks]]
+color = "GREEN"
+name = "Chemical Residue (TOX)"
+flavor_text = "PFAS & cleaning reagents"
+max_level = 10
+thresholds = [{level = 7, effect_key = "TOX_Level_7_Effect"}]
+
+[threshold_effect_descriptions]
+CO2_Level_6_Effect = "+1 CredCoin cost on all energy-heavy actions."
+DEP_Level_5_Effect = "Wells output –1."
+TOX_Level_7_Effect = "Connoisseur segment refuses non-filtered water."

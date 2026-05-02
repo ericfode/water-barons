@@ -1,0 +1,749 @@
+{
+  "facilities": [
+    {
+      "name": "Glacial Tap",
+      "card_type": "FACILITY",
+      "cost": 5,
+      "description": "",
+      "base_output": 3,
+      "impact_profile": {
+        "GREY": 1,
+        "PINK": 1
+      },
+      "tags": [
+        "ARCTIC",
+        "LIMITED 2"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Glacial Tap",
+      "card_type": "FACILITY",
+      "cost": 5,
+      "description": "",
+      "base_output": 3,
+      "impact_profile": {
+        "GREY": 1,
+        "PINK": 1
+      },
+      "tags": [
+        "ARCTIC",
+        "LIMITED 2"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Glacial Tap",
+      "card_type": "FACILITY",
+      "cost": 5,
+      "description": "",
+      "base_output": 3,
+      "impact_profile": {
+        "GREY": 1,
+        "PINK": 1
+      },
+      "tags": [
+        "ARCTIC",
+        "LIMITED 2"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Greywater Loop",
+      "card_type": "FACILITY",
+      "cost": 3,
+      "description": "",
+      "base_output": 2,
+      "impact_profile": {
+        "GREEN": 1
+      },
+      "tags": [
+        "RECYCLING"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Greywater Loop",
+      "card_type": "FACILITY",
+      "cost": 3,
+      "description": "",
+      "base_output": 2,
+      "impact_profile": {
+        "GREEN": 1
+      },
+      "tags": [
+        "RECYCLING"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Greywater Loop",
+      "card_type": "FACILITY",
+      "cost": 3,
+      "description": "",
+      "base_output": 2,
+      "impact_profile": {
+        "GREEN": 1
+      },
+      "tags": [
+        "RECYCLING"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Aquifer Well",
+      "card_type": "FACILITY",
+      "cost": 4,
+      "description": "",
+      "base_output": 4,
+      "impact_profile": {
+        "BLUE": 2
+      },
+      "tags": [
+        "GROUNDWATER"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Aquifer Well",
+      "card_type": "FACILITY",
+      "cost": 4,
+      "description": "",
+      "base_output": 4,
+      "impact_profile": {
+        "BLUE": 2
+      },
+      "tags": [
+        "GROUNDWATER"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Aquifer Well",
+      "card_type": "FACILITY",
+      "cost": 4,
+      "description": "",
+      "base_output": 4,
+      "impact_profile": {
+        "BLUE": 2
+      },
+      "tags": [
+        "GROUNDWATER"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Desalination Plant",
+      "card_type": "FACILITY",
+      "cost": 7,
+      "description": "",
+      "base_output": 5,
+      "impact_profile": {
+        "GREY": 2,
+        "GREEN": 1
+      },
+      "tags": [
+        "COASTAL",
+        "HIGH_ENERGY"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Desalination Plant",
+      "card_type": "FACILITY",
+      "cost": 7,
+      "description": "",
+      "base_output": 5,
+      "impact_profile": {
+        "GREY": 2,
+        "GREEN": 1
+      },
+      "tags": [
+        "COASTAL",
+        "HIGH_ENERGY"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Desalination Plant",
+      "card_type": "FACILITY",
+      "cost": 7,
+      "description": "",
+      "base_output": 5,
+      "impact_profile": {
+        "GREY": 2,
+        "GREEN": 1
+      },
+      "tags": [
+        "COASTAL",
+        "HIGH_ENERGY"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Cloud Harvester",
+      "card_type": "FACILITY",
+      "cost": 6,
+      "description": "",
+      "base_output": 2,
+      "impact_profile": {
+        "GREY": 1
+      },
+      "tags": [
+        "ATMOSPHERIC"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Cloud Harvester",
+      "card_type": "FACILITY",
+      "cost": 6,
+      "description": "",
+      "base_output": 2,
+      "impact_profile": {
+        "GREY": 1
+      },
+      "tags": [
+        "ATMOSPHERIC"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Cloud Harvester",
+      "card_type": "FACILITY",
+      "cost": 6,
+      "description": "",
+      "base_output": 2,
+      "impact_profile": {
+        "GREY": 1
+      },
+      "tags": [
+        "ATMOSPHERIC"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Fog Net Array",
+      "card_type": "FACILITY",
+      "cost": 3,
+      "description": "",
+      "base_output": 1,
+      "impact_profile": {},
+      "tags": [
+        "PASSIVE",
+        "COASTAL"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Fog Net Array",
+      "card_type": "FACILITY",
+      "cost": 3,
+      "description": "",
+      "base_output": 1,
+      "impact_profile": {},
+      "tags": [
+        "PASSIVE",
+        "COASTAL"
+      ],
+      "upgrades": []
+    },
+    {
+      "name": "Fog Net Array",
+      "card_type": "FACILITY",
+      "cost": 3,
+      "description": "",
+      "base_output": 1,
+      "impact_profile": {},
+      "tags": [
+        "PASSIVE",
+        "COASTAL"
+      ],
+      "upgrades": []
+    }
+  ],
+  "distribution": [
+    {
+      "name": "Plastic Bottles",
+      "card_type": "DISTRIBUTION",
+      "cost": 1,
+      "description": "Cheap, adds +1 \u03bcP per 2 cubes sold.",
+      "impact_modifier": {
+        "\u03bcP_per_cubes_sold": {
+          "impact": "PINK",
+          "amount": 1,
+          "per_cubes": 2
+        }
+      },
+      "is_active": true,
+      "special_effect": null
+    },
+    {
+      "name": "Plastic Bottles",
+      "card_type": "DISTRIBUTION",
+      "cost": 1,
+      "description": "Cheap, adds +1 \u03bcP per 2 cubes sold.",
+      "impact_modifier": {
+        "\u03bcP_per_cubes_sold": {
+          "impact": "PINK",
+          "amount": 1,
+          "per_cubes": 2
+        }
+      },
+      "is_active": true,
+      "special_effect": null
+    },
+    {
+      "name": "Plastic Bottles",
+      "card_type": "DISTRIBUTION",
+      "cost": 1,
+      "description": "Cheap, adds +1 \u03bcP per 2 cubes sold.",
+      "impact_modifier": {
+        "\u03bcP_per_cubes_sold": {
+          "impact": "PINK",
+          "amount": 1,
+          "per_cubes": 2
+        }
+      },
+      "is_active": true,
+      "special_effect": null
+    },
+    {
+      "name": "Drone Drops",
+      "card_type": "DISTRIBUTION",
+      "cost": 3,
+      "description": "Fancy, +1 CO\u2082e per cube, draws extra Whim next round.",
+      "impact_modifier": {
+        "CO2e_per_cube_sold": {
+          "impact": "GREY",
+          "amount": 1,
+          "per_cubes": 1
+        }
+      },
+      "is_active": true,
+      "special_effect": "draw_extra_whim_next_round"
+    },
+    {
+      "name": "Drone Drops",
+      "card_type": "DISTRIBUTION",
+      "cost": 3,
+      "description": "Fancy, +1 CO\u2082e per cube, draws extra Whim next round.",
+      "impact_modifier": {
+        "CO2e_per_cube_sold": {
+          "impact": "GREY",
+          "amount": 1,
+          "per_cubes": 1
+        }
+      },
+      "is_active": true,
+      "special_effect": "draw_extra_whim_next_round"
+    },
+    {
+      "name": "Drone Drops",
+      "card_type": "DISTRIBUTION",
+      "cost": 3,
+      "description": "Fancy, +1 CO\u2082e per cube, draws extra Whim next round.",
+      "impact_modifier": {
+        "CO2e_per_cube_sold": {
+          "impact": "GREY",
+          "amount": 1,
+          "per_cubes": 1
+        }
+      },
+      "is_active": true,
+      "special_effect": "draw_extra_whim_next_round"
+    },
+    {
+      "name": "Smart-Pipe Network",
+      "card_type": "DISTRIBUTION",
+      "cost": 5,
+      "description": "Efficient, high upfront cost, low ongoing impact.",
+      "impact_modifier": {},
+      "is_active": true,
+      "special_effect": null
+    },
+    {
+      "name": "Smart-Pipe Network",
+      "card_type": "DISTRIBUTION",
+      "cost": 5,
+      "description": "Efficient, high upfront cost, low ongoing impact.",
+      "impact_modifier": {},
+      "is_active": true,
+      "special_effect": null
+    },
+    {
+      "name": "Smart-Pipe Network",
+      "card_type": "DISTRIBUTION",
+      "cost": 5,
+      "description": "Efficient, high upfront cost, low ongoing impact.",
+      "impact_modifier": {},
+      "is_active": true,
+      "special_effect": null
+    },
+    {
+      "name": "Aluminum Cans",
+      "card_type": "DISTRIBUTION",
+      "cost": 2,
+      "description": "Recyclable alternative to plastic, +1 CO\u2082e per 3 cubes sold (production energy).",
+      "impact_modifier": {
+        "CO2e_per_cubes_sold": {
+          "impact": "GREY",
+          "amount": 1,
+          "per_cubes": 3
+        }
+      },
+      "is_active": true,
+      "special_effect": null
+    },
+    {
+      "name": "Aluminum Cans",
+      "card_type": "DISTRIBUTION",
+      "cost": 2,
+      "description": "Recyclable alternative to plastic, +1 CO\u2082e per 3 cubes sold (production energy).",
+      "impact_modifier": {
+        "CO2e_per_cubes_sold": {
+          "impact": "GREY",
+          "amount": 1,
+          "per_cubes": 3
+        }
+      },
+      "is_active": true,
+      "special_effect": null
+    },
+    {
+      "name": "Aluminum Cans",
+      "card_type": "DISTRIBUTION",
+      "cost": 2,
+      "description": "Recyclable alternative to plastic, +1 CO\u2082e per 3 cubes sold (production energy).",
+      "impact_modifier": {
+        "CO2e_per_cubes_sold": {
+          "impact": "GREY",
+          "amount": 1,
+          "per_cubes": 3
+        }
+      },
+      "is_active": true,
+      "special_effect": null
+    }
+  ],
+  "upgrades": [
+    {
+      "name": "Microplastic Filter",
+      "card_type": "UPGRADE",
+      "cost": 4,
+      "description": "Facility upgrade. Reduces \u03bcP per Flow.",
+      "effect_description": "Apply_to_facility: reduce_impact_per_flow(TrackColor.PINK, 1)",
+      "type": "FACILITY_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Microplastic Filter",
+      "card_type": "UPGRADE",
+      "cost": 4,
+      "description": "Facility upgrade. Reduces \u03bcP per Flow.",
+      "effect_description": "Apply_to_facility: reduce_impact_per_flow(TrackColor.PINK, 1)",
+      "type": "FACILITY_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Microplastic Filter",
+      "card_type": "UPGRADE",
+      "cost": 4,
+      "description": "Facility upgrade. Reduces \u03bcP per Flow.",
+      "effect_description": "Apply_to_facility: reduce_impact_per_flow(TrackColor.PINK, 1)",
+      "type": "FACILITY_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Bioplastic Seal",
+      "card_type": "UPGRADE",
+      "cost": 3,
+      "description": "Route upgrade, remove 1 \u03bcP after selling with this route.",
+      "effect_description": "Apply_to_route: on_sell_remove_impact(TrackColor.PINK, 1)",
+      "type": "ROUTE_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Bioplastic Seal",
+      "card_type": "UPGRADE",
+      "cost": 3,
+      "description": "Route upgrade, remove 1 \u03bcP after selling with this route.",
+      "effect_description": "Apply_to_route: on_sell_remove_impact(TrackColor.PINK, 1)",
+      "type": "ROUTE_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Bioplastic Seal",
+      "card_type": "UPGRADE",
+      "cost": 3,
+      "description": "Route upgrade, remove 1 \u03bcP after selling with this route.",
+      "effect_description": "Apply_to_route: on_sell_remove_impact(TrackColor.PINK, 1)",
+      "type": "ROUTE_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Algae Carbon Sink",
+      "card_type": "UPGRADE",
+      "cost": 5,
+      "description": "Facility tag. At Cleanup, move 1 CO\u2082e cube from track to supply.",
+      "effect_description": "Passive_facility_effect: at_cleanup_reduce_global_impact(TrackColor.GREY, 1)",
+      "type": "FACILITY_TAG",
+      "target_route_slot": null
+    },
+    {
+      "name": "Algae Carbon Sink",
+      "card_type": "UPGRADE",
+      "cost": 5,
+      "description": "Facility tag. At Cleanup, move 1 CO\u2082e cube from track to supply.",
+      "effect_description": "Passive_facility_effect: at_cleanup_reduce_global_impact(TrackColor.GREY, 1)",
+      "type": "FACILITY_TAG",
+      "target_route_slot": null
+    },
+    {
+      "name": "Algae Carbon Sink",
+      "card_type": "UPGRADE",
+      "cost": 5,
+      "description": "Facility tag. At Cleanup, move 1 CO\u2082e cube from track to supply.",
+      "effect_description": "Passive_facility_effect: at_cleanup_reduce_global_impact(TrackColor.GREY, 1)",
+      "type": "FACILITY_TAG",
+      "target_route_slot": null
+    },
+    {
+      "name": "Aquifer Recharge Tech",
+      "card_type": "UPGRADE",
+      "cost": 6,
+      "description": "R&D Passive. Reduce DEP impact from all your Wells by 1.",
+      "effect_description": "Global_player_passive: reduce_facility_impact_type('Well', TrackColor.BLUE, 1)",
+      "type": "R&D",
+      "target_route_slot": null
+    },
+    {
+      "name": "Aquifer Recharge Tech",
+      "card_type": "UPGRADE",
+      "cost": 6,
+      "description": "R&D Passive. Reduce DEP impact from all your Wells by 1.",
+      "effect_description": "Global_player_passive: reduce_facility_impact_type('Well', TrackColor.BLUE, 1)",
+      "type": "R&D",
+      "target_route_slot": null
+    },
+    {
+      "name": "Aquifer Recharge Tech",
+      "card_type": "UPGRADE",
+      "cost": 6,
+      "description": "R&D Passive. Reduce DEP impact from all your Wells by 1.",
+      "effect_description": "Global_player_passive: reduce_facility_impact_type('Well', TrackColor.BLUE, 1)",
+      "type": "R&D",
+      "target_route_slot": null
+    },
+    {
+      "name": "Eco-Solar Upgrade",
+      "card_type": "UPGRADE",
+      "cost": 4,
+      "description": "Facility Upgrade. Reduces CO2e impact from target facility by 1.",
+      "effect_description": "Apply_to_facility: reduce_impact_per_flow(TrackColor.GREY, 1)",
+      "type": "FACILITY_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Eco-Solar Upgrade",
+      "card_type": "UPGRADE",
+      "cost": 4,
+      "description": "Facility Upgrade. Reduces CO2e impact from target facility by 1.",
+      "effect_description": "Apply_to_facility: reduce_impact_per_flow(TrackColor.GREY, 1)",
+      "type": "FACILITY_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Eco-Solar Upgrade",
+      "card_type": "UPGRADE",
+      "cost": 4,
+      "description": "Facility Upgrade. Reduces CO2e impact from target facility by 1.",
+      "effect_description": "Apply_to_facility: reduce_impact_per_flow(TrackColor.GREY, 1)",
+      "type": "FACILITY_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Nano-Resin Cleaners",
+      "card_type": "UPGRADE",
+      "cost": 5,
+      "description": "Facility Upgrade. Reduces TOX impact from target facility by 1.",
+      "effect_description": "Apply_to_facility: reduce_impact_per_flow(TrackColor.GREEN, 1)",
+      "type": "FACILITY_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Nano-Resin Cleaners",
+      "card_type": "UPGRADE",
+      "cost": 5,
+      "description": "Facility Upgrade. Reduces TOX impact from target facility by 1.",
+      "effect_description": "Apply_to_facility: reduce_impact_per_flow(TrackColor.GREEN, 1)",
+      "type": "FACILITY_UPGRADE",
+      "target_route_slot": null
+    },
+    {
+      "name": "Nano-Resin Cleaners",
+      "card_type": "UPGRADE",
+      "cost": 5,
+      "description": "Facility Upgrade. Reduces TOX impact from target facility by 1.",
+      "effect_description": "Apply_to_facility: reduce_impact_per_flow(TrackColor.GREEN, 1)",
+      "type": "FACILITY_UPGRADE",
+      "target_route_slot": null
+    }
+  ],
+  "whims": [
+    {
+      "name": "Glitterwave Fashion",
+      "card_type": "WHIM",
+      "cost": 0,
+      "description": "",
+      "trigger_condition": "\u03bcP < 5",
+      "pre_round_effect": "DemandSegment:Connoisseurs:current_demand:+2",
+      "demand_shift": {},
+      "post_round_fallout": "GlobalImpact:PINK:+2"
+    },
+    {
+      "name": "Glitterwave Fashion",
+      "card_type": "WHIM",
+      "cost": 0,
+      "description": "",
+      "trigger_condition": "\u03bcP < 5",
+      "pre_round_effect": "DemandSegment:Connoisseurs:current_demand:+2",
+      "demand_shift": {},
+      "post_round_fallout": "GlobalImpact:PINK:+2"
+    },
+    {
+      "name": "Doomscroll Detox",
+      "card_type": "WHIM",
+      "cost": 0,
+      "description": "",
+      "trigger_condition": "CO\u2082e >= 6",
+      "pre_round_effect": "DemandSegment:Frugalists:current_price:+1",
+      "demand_shift": {},
+      "post_round_fallout": "GlobalImpact:GREY:-1"
+    },
+    {
+      "name": "Doomscroll Detox",
+      "card_type": "WHIM",
+      "cost": 0,
+      "description": "",
+      "trigger_condition": "CO\u2082e >= 6",
+      "pre_round_effect": "DemandSegment:Frugalists:current_price:+1",
+      "demand_shift": {},
+      "post_round_fallout": "GlobalImpact:GREY:-1"
+    },
+    {
+      "name": "Heatwave Hysteria",
+      "card_type": "WHIM",
+      "cost": 0,
+      "description": "",
+      "trigger_condition": "CO\u2082e >= 7",
+      "pre_round_effect": "AllSegments:current_demand:+1",
+      "demand_shift": {},
+      "post_round_fallout": "GlobalImpact:GREY:+1"
+    },
+    {
+      "name": "Heatwave Hysteria",
+      "card_type": "WHIM",
+      "cost": 0,
+      "description": "",
+      "trigger_condition": "CO\u2082e >= 7",
+      "pre_round_effect": "AllSegments:current_demand:+1",
+      "demand_shift": {},
+      "post_round_fallout": "GlobalImpact:GREY:+1"
+    },
+    {
+      "name": "Sustainable Sipping",
+      "card_type": "WHIM",
+      "cost": 0,
+      "description": "",
+      "trigger_condition": "DEP < 4",
+      "pre_round_effect": "DemandSegment:Eco-Elites:current_price:+1",
+      "demand_shift": {},
+      "post_round_fallout": "PlayerEffect:EcoEliteBuyers:GainReputation:1"
+    },
+    {
+      "name": "Sustainable Sipping",
+      "card_type": "WHIM",
+      "cost": 0,
+      "description": "",
+      "trigger_condition": "DEP < 4",
+      "pre_round_effect": "DemandSegment:Eco-Elites:current_price:+1",
+      "demand_shift": {},
+      "post_round_fallout": "PlayerEffect:EcoEliteBuyers:GainReputation:1"
+    }
+  ],
+  "global_events": [
+    {
+      "name": "Aquifer Collapse",
+      "card_type": "GLOBAL_EVENT",
+      "cost": 0,
+      "description": "",
+      "trigger_track": "BLUE",
+      "trigger_threshold": 8,
+      "effect_description": "All 'Well' type facilities output halved until Depletion <= 6. New Wells cannot be built."
+    },
+    {
+      "name": "Heatwave Frenzy",
+      "card_type": "GLOBAL_EVENT",
+      "cost": 0,
+      "description": "",
+      "trigger_track": "GREY",
+      "trigger_threshold": 9,
+      "effect_description": "Double demand across all segments. All facilities Flow \u20131 (overheat)."
+    },
+    {
+      "name": "Microplastic Revelation",
+      "card_type": "GLOBAL_EVENT",
+      "cost": 0,
+      "description": "",
+      "trigger_track": "PINK",
+      "trigger_threshold": 8,
+      "effect_description": "All 'Plastic Bottles' routes instantly add +3 \u03bcP then flip face-down (cannot be used)."
+    },
+    {
+      "name": "Mass Recall",
+      "card_type": "GLOBAL_EVENT",
+      "cost": 0,
+      "description": "",
+      "trigger_track": "GREEN",
+      "trigger_threshold": 10,
+      "effect_description": "All unsold Water cubes are immediately discarded. No sales this round from tainted supply."
+    },
+    {
+      "name": "Energy Crisis",
+      "card_type": "GLOBAL_EVENT",
+      "cost": 0,
+      "description": "",
+      "trigger_track": "GREY",
+      "trigger_threshold": 7,
+      "effect_description": "Cost of 'Flow' action for energy-heavy facilities (Desal, Drone) increases by 1 CredCoin."
+    },
+    {
+      "name": "Plastic Blight",
+      "card_type": "GLOBAL_EVENT",
+      "cost": 0,
+      "description": "",
+      "trigger_track": "PINK",
+      "trigger_threshold": 6,
+      "effect_description": "Facilities with 'Plastic' in their components or Plastic Bottle routes suffer -1 output/efficiency."
+    },
+    {
+      "name": "Dustbowl Proclamation",
+      "card_type": "GLOBAL_EVENT",
+      "cost": 0,
+      "description": "",
+      "trigger_track": "BLUE",
+      "trigger_threshold": 6,
+      "effect_description": "Cost to build new 'Well' or 'River Diversion' facilities increases by 2 CredCoin."
+    },
+    {
+      "name": "Toxic Algae Bloom",
+      "card_type": "GLOBAL_EVENT",
+      "cost": 0,
+      "description": "",
+      "trigger_track": "GREEN",
+      "trigger_threshold": 7,
+      "effect_description": "Water from 'Coastal' tagged facilities costs +1 CredCoin for players to produce (extra filtering)."
+    }
+  ]
+}

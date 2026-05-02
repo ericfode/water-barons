@@ -26,7 +26,7 @@ Open <http://127.0.0.1:5173>. The authoritative Colyseus multiplayer server runs
 
 ## Source Material
 
-The original repository is cloned into `reference/water-barons` for provenance. The recovered mechanics are summarized in [docs/source-recovery.md](./docs/source-recovery.md), the browser game direction is captured in [docs/design-brief.md](./docs/design-brief.md), the implementation foundation plus visual style package is in [docs/browser-game-foundation.md](./docs/browser-game-foundation.md), and the staged production route is in [docs/game-studio-production-plan.md](./docs/game-studio-production-plan.md).
+The original source snapshot is vendored into `reference/water-barons` for provenance. The recovered mechanics are summarized in [docs/source-recovery.md](./docs/source-recovery.md), the browser game direction is captured in [docs/design-brief.md](./docs/design-brief.md), the implementation foundation plus visual style package is in [docs/browser-game-foundation.md](./docs/browser-game-foundation.md), and the staged production route is in [docs/game-studio-production-plan.md](./docs/game-studio-production-plan.md).
 
 ## Verify
 
@@ -34,3 +34,7 @@ The original repository is cloned into `reference/water-barons` for provenance. 
 npm run test
 npm run build
 ```
+
+## Symphony
+
+The repo-owned Symphony workflow is in [WORKFLOW.md](./WORKFLOW.md). Setup and run notes are in [docs/symphony.md](./docs/symphony.md).

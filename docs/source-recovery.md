@@ -5,8 +5,10 @@ Recovered source:
 - GitHub repository: `ericfode/water-barons`
 - URL: `https://github.com/ericfode/water-barons`
 - Current GitHub default branch observed on 2026-04-26: `main`
-- Local clone: `reference/water-barons`
+- Local vendored snapshot: `reference/water-barons`
 - Historical Codex state also referenced `feature/card-effect-refinements-and-testing`; that branch still exists remotely but GitHub now reports `main` as default.
+
+Note: on 2026-05-02 this browser project replaced the GitHub repository history. The source material remains in the vendored snapshot path above instead of a live submodule.
 
 ## Original Premise
 

@@ -1,0 +1,245 @@
+[[facilities]]
+name = "Glacial Tap"
+cost = 5
+base_output = 3
+copies = 3
+description = "Taps into ancient glaciers."
+impact_profile = {GREY = 1, PINK = 1}
+tags = ["ARCTIC", "LIMITED 2"]
+
+[[facilities]]
+name = "Greywater Loop"
+cost = 3
+base_output = 2
+copies = 3
+description = "Recycles wastewater. Reduces Microplastics."
+impact_profile = {GREEN = 1}
+tags = ["RECYCLING"]
+
+[[facilities]]
+name = "Aquifer Well"
+cost = 4
+base_output = 4
+copies = 3
+description = "Standard well drawing from aquifers."
+impact_profile = {BLUE = 2}
+tags = ["GROUNDWATER"]
+
+[[facilities]]
+name = "Desalination Plant"
+cost = 7
+base_output = 5
+copies = 3
+description = "Converts seawater to freshwater."
+impact_profile = {GREY = 2, GREEN = 1}
+tags = ["COASTAL", "HIGH_ENERGY"]
+
+[[facilities]]
+name = "Cloud Harvester"
+cost = 6
+base_output = 2
+copies = 3
+description = "Collects water vapor from the air."
+impact_profile = {GREY = 1}
+tags = ["ATMOSPHERIC"]
+
+[[facilities]]
+name = "Fog Net Array"
+cost = 3
+base_output = 1
+copies = 3
+description = "Passively collects water from fog."
+impact_profile = {}
+tags = ["PASSIVE", "COASTAL"]
+
+[[distributions]]
+name = "Plastic Bottles"
+cost = 1
+copies = 3
+description = "Cheap, adds +1 μP per 2 cubes sold."
+impact_modifier = {"μP_per_cubes_sold" = {impact = "PINK", amount = 1, per_cubes = 2}}
+
+[[distributions]]
+name = "Drone Drops"
+cost = 3
+copies = 3
+description = "Fancy, +1 CO₂e per cube, draws extra Whim next round."
+impact_modifier = {"CO2e_per_cube_sold" = {impact = "GREY", amount = 1, per_cubes = 1}}
+special_effect = "draw_extra_whim_next_round"
+
+[[distributions]]
+name = "Smart-Pipe Network"
+cost = 5
+copies = 3
+description = "Efficient, high upfront cost, low ongoing impact."
+impact_modifier = {}
+
+[[distributions]]
+name = "Aluminum Cans"
+cost = 2
+copies = 3
+description = "Recyclable alternative to plastic, +1 CO₂e per 3 cubes sold (production energy)."
+impact_modifier = {CO2e_per_cubes_sold = {impact = "GREY", amount = 1, per_cubes = 3}}
+
+[[upgrades]]
+name = "Microplastic Filter"
+cost = 4
+copies = 3
+description = "Facility upgrade. Reduces μP per Flow."
+effect_description = "Apply_to_facility: reduce_impact_per_flow(TrackColor.PINK, 1)"
+type = "FACILITY_UPGRADE"
+
+[[upgrades]]
+name = "Bioplastic Seal"
+cost = 3
+copies = 3
+description = "Route upgrade, remove 1 μP after selling with this route."
+effect_description = "Apply_to_route: on_sell_remove_impact(TrackColor.PINK, 1)"
+type = "ROUTE_UPGRADE"
+
+[[upgrades]]
+name = "Algae Carbon Sink"
+cost = 5
+copies = 3
+description = "Facility tag. At Cleanup, move 1 CO₂e cube from track to supply."
+effect_description = "Passive_facility_effect: at_cleanup_reduce_global_impact(TrackColor.GREY, 1)"
+type = "FACILITY_TAG"
+
+[[upgrades]]
+name = "Aquifer Recharge Tech"
+cost = 6
+copies = 3
+description = "R&D Passive. Reduce DEP impact from all your Wells by 1."
+effect_description = "Global_player_passive: reduce_facility_impact_type('Well', TrackColor.BLUE, 1)"
+type = "R&D"
+
+[[upgrades]]
+name = "Eco-Solar Upgrade"
+cost = 4
+copies = 3
+description = "Facility Upgrade. Reduces CO2e impact from target facility by 1."
+effect_description = "Apply_to_facility: reduce_impact_per_flow(TrackColor.GREY, 1)"
+type = "FACILITY_UPGRADE"
+
+[[upgrades]]
+name = "Nano-Resin Cleaners"
+cost = 5
+copies = 3
+description = "Facility Upgrade. Reduces TOX impact from target facility by 1."
+effect_description = "Apply_to_facility: reduce_impact_per_flow(TrackColor.GREEN, 1)"
+type = "FACILITY_UPGRADE"
+
+[[whims]]
+name = "Glitterwave Fashion"
+trigger_condition = "μP < 5"
+pre_round_effect = "DemandSegment:Connoisseurs:current_demand:+2"
+demand_shift = {}
+post_round_fallout = "GlobalImpact:PINK:+2"
+copies = 2
+
+[[whims]]
+name = "Doomscroll Detox"
+trigger_condition = "CO₂e >= 6"
+pre_round_effect = "DemandSegment:Frugalists:current_price:+1"
+demand_shift = {}
+post_round_fallout = "GlobalImpact:GREY:-1"
+copies = 2
+
+[[whims]]
+name = "Heatwave Hysteria"
+trigger_condition = "CO₂e >= 7"
+pre_round_effect = "AllSegments:current_demand:+1"
+demand_shift = {}
+post_round_fallout = "GlobalImpact:GREY:+1"
+copies = 2
+
+[[whims]]
+name = "Sustainable Sipping"
+trigger_condition = "DEP < 4"
+pre_round_effect = "DemandSegment:Eco-Elites:current_price:+1"
+demand_shift = {}
+post_round_fallout = "PlayerEffect:EcoEliteBuyers:GainReputation:1"
+copies = 2
+
+[[global_events]]
+name = "Aquifer Collapse"
+trigger_track = "BLUE"
+trigger_threshold = 8
+effect_description = "All 'Well' type facilities output halved until Depletion <= 6. New Wells cannot be built."
+
+[[global_events]]
+name = "Heatwave Frenzy"
+trigger_track = "GREY"
+trigger_threshold = 9
+effect_description = "Double demand across all segments. All facilities Flow –1 (overheat)."
+
+[[global_events]]
+name = "Microplastic Revelation"
+trigger_track = "PINK"
+trigger_threshold = 8
+effect_description = "All 'Plastic Bottles' routes instantly add +3 μP then flip face-down (cannot be used)."
+
+[[global_events]]
+name = "Mass Recall"
+trigger_track = "GREEN"
+trigger_threshold = 10
+effect_description = "All unsold Water cubes are immediately discarded. No sales this round from tainted supply."
+
+[[global_events]]
+name = "Energy Crisis"
+trigger_track = "GREY"
+trigger_threshold = 7
+effect_description = "Cost of 'Flow' action for energy-heavy facilities (Desal, Drone) increases by 1 CredCoin."
+
+[[global_events]]
+name = "Plastic Blight"
+trigger_track = "PINK"
+trigger_threshold = 6
+effect_description = "Facilities with 'Plastic' in their components or Plastic Bottle routes suffer -1 output/efficiency."
+
+[[global_events]]
+name = "Dustbowl Proclamation"
+trigger_track = "BLUE"
+trigger_threshold = 6
+effect_description = "Cost to build new 'Well' or 'River Diversion' facilities increases by 2 CredCoin."
+
+[[global_events]]
+name = "Toxic Algae Bloom"
+trigger_track = "GREEN"
+trigger_threshold = 7
+effect_description = "Water from 'Coastal' tagged facilities costs +1 CredCoin for players to produce (extra filtering)."
+
+[[actions]]
+name = "Build Facility"
+method = "action_build_facility"
+description = "Construct a facility in an empty slot."
+
+[[actions]]
+name = "Produce Water"
+method = "action_produce_water"
+description = "Activate a facility to produce water (Flow)."
+
+[[actions]]
+name = "Build Distribution"
+method = "action_build_distribution"
+description = "Build a distribution route."
+
+[[actions]]
+name = "Add Upgrade"
+method = "action_tweak_add_upgrade"
+description = "Apply an upgrade to a facility or route."
+
+[[actions]]
+name = "Speculate"
+method = "action_speculate"
+description = "Buy or sell futures tokens."
+
+[[actions]]
+name = "Spin Marketing"
+method = "action_spin_marketing"
+description = "Perform marketing actions."
+
+[[actions]]
+name = "Buy Event Option"
+method = "action_buy_event_option"
+description = "Purchase an option linked to a global event."

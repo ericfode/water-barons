@@ -2,7 +2,7 @@ import * as Phaser from "phaser";
 import { facilities, trackLabels } from "../game/content";
 import type { BasinRunState, BasinTile, FacilityId, ImpactProfile, Terrain, TrackKey } from "../game/types";
 
-export type ToolMode = "scout" | "build" | "inspect";
+export type ToolMode = "scout" | "build" | "inspect" | "contracts" | "politics";
 
 export interface BasinSceneToolState {
   mode: ToolMode;
@@ -176,11 +176,7 @@ export class BasinScene extends Phaser.Scene {
     if (!this.snapshot) return;
     const tile = this.findTileAtWorld(pointer.worldX, pointer.worldY);
     if (!tile) return;
-
     this.callbacks.onTileSelected(tile.id);
-    if (this.toolState.mode === "scout") {
-      this.callbacks.onScout(tile.id);
-    }
   }
 
   private centerCameraOnPlayer(): void {
@@ -226,6 +222,7 @@ export class BasinScene extends Phaser.Scene {
     for (const tile of this.snapshot.tiles) {
       if (tile.structure) this.drawFacility(g, tile);
     }
+    this.drawScoutReach(g);
     this.drawScouts(g);
     this.drawActionHint(g);
   }
@@ -402,20 +399,53 @@ export class BasinScene extends Phaser.Scene {
       if (!visible) continue;
       const center = tileCenter(tile);
       const color = ownerColors[Number(player.id) % ownerColors.length];
+      const scoutX = center.x - 18;
+      const scoutY = center.y - 19;
+
+      g.fillStyle(0x20272b, 0.22);
+      g.fillEllipse(scoutX + 3, scoutY + 20, 34, 11);
+      g.lineStyle(player.id === this.playerID ? 4 : 2, player.id === this.playerID ? 0x2d7fa3 : color, player.id === this.playerID ? 0.88 : 0.62);
+      g.strokeCircle(scoutX, scoutY, player.id === this.playerID ? 18 : 14);
+      g.fillStyle(0xf8f7f1, 0.96);
+      g.fillCircle(scoutX, scoutY, 12);
+      g.lineStyle(3, color, 0.96);
+      g.strokeCircle(scoutX, scoutY, 12);
       g.fillStyle(color, 1);
-      g.fillCircle(center.x - 15, center.y - 14, 6);
-      g.lineStyle(2, 0x20272b, 0.72);
-      g.lineBetween(center.x - 15, center.y - 8, center.x - 15, center.y + 8);
+      g.fillCircle(scoutX, scoutY, 5);
+      g.lineStyle(3, 0x20272b, 0.64);
+      g.lineBetween(scoutX, scoutY + 12, scoutX, scoutY + 30);
+      g.lineStyle(2, 0xc6a24a, 0.96);
+      g.lineBetween(scoutX + 4, scoutY - 11, scoutX + 4, scoutY - 29);
+      g.fillStyle(0xc6a24a, 0.96);
+      g.fillTriangle(scoutX + 6, scoutY - 29, scoutX + 27, scoutY - 22, scoutX + 6, scoutY - 16);
+      g.lineStyle(1, 0x7a5e13, 0.72);
+      g.strokeTriangle(scoutX + 6, scoutY - 29, scoutX + 27, scoutY - 22, scoutX + 6, scoutY - 16);
       if (player.id === this.playerID) {
-        g.lineStyle(2, 0xf8f7f1, 0.96);
-        g.strokeCircle(center.x - 15, center.y - 14, 10);
         for (let index = 0; index < 3; index += 1) {
           g.fillStyle(index < player.actionsRemaining ? 0xc6a24a : 0xf8f7f1, index < player.actionsRemaining ? 1 : 0.62);
-          g.fillCircle(center.x + 2 + index * 9, center.y - 27, 3.5);
+          g.fillCircle(scoutX - 10 + index * 10, scoutY - 37, 4);
           g.lineStyle(1, 0x20272b, 0.38);
-          g.strokeCircle(center.x + 2 + index * 9, center.y - 27, 3.5);
+          g.strokeCircle(scoutX - 10 + index * 10, scoutY - 37, 4);
         }
       }
+    }
+  }
+
+  private drawScoutReach(g: Phaser.GameObjects.Graphics): void {
+    if (!this.snapshot) return;
+    const player = this.snapshot.players[this.playerID];
+    const current = player ? this.snapshot.tiles.find((candidate) => candidate.id === player.scoutTileId) : undefined;
+    if (!player || !current) return;
+    const shouldShow = this.toolState.mode === "scout" || this.toolState.stagedAction === "scout" || this.toolState.selectedTileId === current.id;
+    if (!shouldShow) return;
+    for (const tile of this.snapshot.tiles) {
+      const adjacent = Math.abs(current.x - tile.x) + Math.abs(current.y - tile.y) === 1;
+      if (!adjacent) continue;
+      const points = tileDiamond(tile);
+      g.fillStyle(0x2d7fa3, player.actionsRemaining > 0 ? 0.11 : 0.04);
+      g.fillPoints(points, true);
+      g.lineStyle(2, player.actionsRemaining > 0 ? 0x2d7fa3 : 0xb8ad99, player.actionsRemaining > 0 ? 0.42 : 0.24);
+      g.strokePoints(points, true);
     }
   }
 

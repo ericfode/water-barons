@@ -72,6 +72,12 @@ interface BuildPreviewState {
   effects: EffectLine[];
 }
 
+interface ScoutMovePreview {
+  canMove: boolean;
+  reason: string;
+  effects: EffectLine[];
+}
+
 interface BuildCandidate {
   tile: BasinTile;
   facilityId: FacilityId;
@@ -364,10 +370,12 @@ function GameView({
   const [civicTarget, setCivicTarget] = useState<string>(() => firstRivalId(viewSnapshot, playerID) ?? playerID);
   const [stagedTarget, setStagedTarget] = useState<StagedMapTarget | undefined>();
   const routePanelRef = useRef<HTMLElement>(null);
+  const civicPanelRef = useRef<HTMLElement>(null);
   const routeHighlightTimerRef = useRef<number | undefined>(undefined);
-  const [spotlitPanel, setSpotlitPanel] = useState<"routes" | undefined>();
+  const [spotlitPanel, setSpotlitPanel] = useState<"routes" | "civic" | undefined>();
 
   const focusRoutesPanel = useCallback((nextRouteId?: RouteId, label?: string) => {
+    setTool("contracts");
     if (nextRouteId) setRouteId(nextRouteId);
     setStagedTarget({ kind: "route", label: label ?? (nextRouteId ? routes[nextRouteId].name : "Route Auction") });
     setSpotlitPanel("routes");
@@ -375,6 +383,17 @@ function GameView({
     routeHighlightTimerRef.current = window.setTimeout(() => setSpotlitPanel(undefined), 1800);
     window.requestAnimationFrame(() => {
       routePanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }, []);
+
+  const focusCivicPanel = useCallback((label?: string) => {
+    setTool("politics");
+    setStagedTarget({ kind: "policy", label: label ?? "Policy Docket" });
+    setSpotlitPanel("civic");
+    if (routeHighlightTimerRef.current !== undefined) window.clearTimeout(routeHighlightTimerRef.current);
+    routeHighlightTimerRef.current = window.setTimeout(() => setSpotlitPanel(undefined), 1800);
+    window.requestAnimationFrame(() => {
+      civicPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
   }, []);
 
@@ -403,6 +422,7 @@ function GameView({
     () => getBuildPreviewState(viewSnapshot, player, selectedTile, facilityId),
     [facilityId, player, selectedTile, viewSnapshot],
   );
+  const selectedScoutPreview = useMemo(() => getScoutMovePreview(viewSnapshot, player, selectedTile), [player, selectedTile, viewSnapshot]);
   const bestBuild = useMemo(() => findBestBuildCandidate(viewSnapshot, player), [player, viewSnapshot]);
   const bestSale = useMemo(() => findBestSaleCandidate(viewSnapshot, player), [player, viewSnapshot]);
   const bestOffer = useMemo(() => findBestRouteOffer(viewSnapshot, player), [player, viewSnapshot]);
@@ -420,13 +440,14 @@ function GameView({
       status: scoutMoves > 0 ? `${scoutMoves} scout moves ready` : "Scout team is spent until the next round beat",
       effects: ["Reveals adjacent terrain", "Finds valid connected facility sites", "Can expose hazards before capital is committed"],
       tone: scoutMoves > 0 ? "positive" : "neutral",
-      actionLabel: "Scout",
-      disabled: scoutMoves <= 0,
-      onSelect: () => {
-        setTool("scout");
-        setStagedTarget({ kind: "scout", tileId: player?.scoutTileId, label: "Scout reach" });
-      },
-    };
+        actionLabel: "Scout",
+        disabled: scoutMoves <= 0,
+        onSelect: () => {
+          setTool("scout");
+          setStagedTarget({ kind: "scout", tileId: player?.scoutTileId, label: "Scout reach" });
+          if (player?.scoutTileId) setSelectedTileId(player.scoutTileId);
+        },
+      };
 
     if (bestSale) {
       items.push({
@@ -529,13 +550,13 @@ function GameView({
         actionLabel: "Review Docket",
         onSelect: () => {
           setStagedTarget({ kind: "policy", label: forecast ? forecast.label : "Council agenda" });
-          document.querySelector(".docket-list")?.scrollIntoView({ behavior: "smooth", block: "center" });
+          focusCivicPanel(forecast ? forecast.label : "Council agenda");
         },
       });
     }
 
     return items.sort((left, right) => Number(Boolean(left.disabled)) - Number(Boolean(right.disabled))).slice(0, 4);
-  }, [bestBuild, bestOffer, bestSale, focusRoutesPanel, player, selectedSalePreview.reason, viewSnapshot]);
+  }, [bestBuild, bestOffer, bestSale, focusCivicPanel, focusRoutesPanel, player, selectedSalePreview.reason, viewSnapshot]);
 
   useEffect(() => {
     if (!routeOptions.includes(routeId)) {
@@ -545,7 +566,10 @@ function GameView({
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setTool("inspect");
+      if (event.key === "Escape") {
+        setTool("inspect");
+        setStagedTarget(undefined);
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
@@ -562,10 +586,17 @@ function GameView({
         setStagedTarget({ kind: "build", tileId, label: `Build ${facilities[facilityId].name}` });
       } else if (tool === "scout") {
         setStagedTarget({ kind: "scout", tileId, label: "Scout target" });
+      } else if (tool === "contracts" || tool === "politics") {
+        setStagedTarget(undefined);
       }
     },
     [facilityId, tool],
   );
+
+  const clearStagedAction = useCallback(() => {
+    setStagedTarget(undefined);
+    setTool("inspect");
+  }, []);
 
   return (
     <main className="game-shell">
@@ -609,27 +640,35 @@ function GameView({
             <Factory size={17} />
             <span>Build</span>
           </IconTool>
-          <div className="rail-divider" />
-          <div className="rail-caption">Facilities</div>
-          {facilityList.map((facility) => (
-            <IconTool
-              key={facility.id}
-              active={tool === "build" && facilityId === facility.id}
-              label={`${facility.name} (${facility.cost} CC)`}
-              onClick={() => {
-                setTool("build");
-                setFacilityId(facility.id);
-              }}
-            >
-              <FacilityGlyph facilityId={facility.id} />
-              <span>{facility.name}</span>
-            </IconTool>
-          ))}
+          <IconTool active={tool === "contracts"} label="Contracts" onClick={() => focusRoutesPanel(undefined, "Route Contracts")}>
+            <HandCoins size={17} />
+            <span>Contracts</span>
+          </IconTool>
+          <IconTool active={tool === "politics"} label="Politics" onClick={() => focusCivicPanel("Policy Docket")}>
+            <Megaphone size={17} />
+            <span>Politics</span>
+          </IconTool>
         </aside>
 
         <section className="playfield-wrap">
           <ModePanel snapshot={viewSnapshot} player={player} tool={tool} facilityId={facilityId} selectedTile={selectedTile} />
           <BeatClockPanel snapshot={viewSnapshot} stagedTarget={stagedTarget} />
+          {tool === "build" ? (
+            <BuildPalette
+              snapshot={viewSnapshot}
+              player={player}
+              selectedTile={selectedTile}
+              hasStagedTarget={stagedTarget?.kind === "build"}
+              facilityId={facilityId}
+              onSelect={(nextFacilityId) => {
+                setFacilityId(nextFacilityId);
+                setTool("build");
+                if (stagedTarget?.kind === "build" && selectedTile) {
+                  setStagedTarget({ kind: "build", tileId: selectedTile.id, label: `Build ${facilities[nextFacilityId].name}` });
+                }
+              }}
+            />
+          ) : null}
           <BasinCanvas
             snapshot={viewSnapshot}
             playerID={playerID}
@@ -641,12 +680,33 @@ function GameView({
             onScout={(tileId) => send("moveScout", { tileId })}
             onBuild={(tileId, nextFacilityId) => send("build", { tileId, facilityId: nextFacilityId })}
           />
-          {tool === "build" && selectedTile && selectedBuildPreview.canBuild ? (
+          {tool === "build" && stagedTarget?.kind === "build" && selectedTile ? (
             <ContextActionDock
+              eyebrow={selectedBuildPreview.canBuild ? "Valid build site" : "Build blocked"}
               title={`Build ${facilities[facilityId].name}`}
               meta={`${selectedBuildPreview.cost} CC at ${selectedTile.id}`}
-              detail={`+${selectedBuildPreview.production} water every production pulse`}
-              onConfirm={() => send("build", { tileId: selectedTile.id, facilityId })}
+              detail={selectedBuildPreview.canBuild ? `+${selectedBuildPreview.production} water every production pulse` : selectedBuildPreview.reason}
+              actionLabel={selectedBuildPreview.canBuild ? "Build" : "Cannot Build"}
+              disabled={!selectedBuildPreview.canBuild}
+              onConfirm={() => {
+                send("build", { tileId: selectedTile.id, facilityId });
+                setStagedTarget(undefined);
+              }}
+              onCancel={clearStagedAction}
+            />
+          ) : tool === "scout" && stagedTarget?.kind === "scout" && selectedTile ? (
+            <ContextActionDock
+              eyebrow={selectedScoutPreview.canMove ? "Scout movement" : "Scout blocked"}
+              title={selectedScoutPreview.canMove ? `Move scout to ${selectedTile.id}` : selectedScoutPreview.reason}
+              meta={`${player?.actionsRemaining ?? 0}/3 moves`}
+              detail={selectedScoutPreview.effects.map((effect) => `${effect.label}: ${effect.value}`).join(" / ")}
+              actionLabel={selectedScoutPreview.canMove ? "Move Scout" : "Cannot Move"}
+              disabled={!selectedScoutPreview.canMove}
+              onConfirm={() => {
+                send("moveScout", { tileId: selectedTile.id });
+                setStagedTarget(undefined);
+              }}
+              onCancel={clearStagedAction}
             />
           ) : null}
           <div className="bottom-ticker">
@@ -656,57 +716,53 @@ function GameView({
           {lastError ? <div className="toast-error">{lastError}</div> : null}
         </section>
 
-        <aside className="right-panel">
+        <aside className={`right-panel command-drawer mode-${tool}`}>
           <DecisionStack items={nextActions} />
-          <TileInspector tile={selectedTile} playerID={playerID} />
 
-          <section className={`panel-section build-order${tool === "build" ? " active" : ""}`}>
-            <div className="section-title">
-              <Factory size={15} />
-              <h2>Build Order</h2>
-            </div>
-            <BuildPreview snapshot={viewSnapshot} player={player} tile={selectedTile} facilityId={facilityId} preview={selectedBuildPreview} />
-            <div className="button-row">
-              <button onClick={() => setTool("inspect")}>Inspect Mode</button>
-              <button onClick={() => setTool("build")}>Build Mode</button>
-            </div>
-            <button
-              className="primary-action compact"
-              disabled={tool !== "build" || !selectedBuildPreview.canBuild}
-              title={selectedBuildPreview.reason}
-              onClick={() => selectedTile && send("build", { tileId: selectedTile.id, facilityId })}
-            >
-              <ClipboardCheck size={15} />
-              {selectedBuildPreview.canBuild ? "Confirm Build" : "Cannot Build"}
-            </button>
-          </section>
-
-          <MarketPanel
-            snapshot={viewSnapshot}
-            player={player}
-            routeOptions={routeOptions}
-            routeId={routeId}
-            demandId={demandId}
-            amount={amount}
-            setRouteId={setRouteId}
-            setDemandId={setDemandId}
-            setAmount={setAmount}
-            onBuyRoute={() => send("buyRoute", { routeId })}
-            onSell={() => send("sell", { routeId, demandId, amount })}
-            salePreview={selectedSalePreview}
-            buyPreview={selectedBuyPreview}
-            panelRef={routePanelRef}
-            highlight={spotlitPanel === "routes"}
-          />
-
-          <CivicPanel
-            snapshot={viewSnapshot}
-            playerID={playerID}
-            civicTarget={civicTarget}
-            setCivicTarget={setCivicTarget}
-            onAction={(actionId, targetPlayerId) => send("civicAction", { actionId, targetPlayerId })}
-            onPolicyChoice={(choiceId) => send("policyChoice", { choiceId })}
-          />
+          {tool === "inspect" ? <TileInspector tile={selectedTile} playerID={playerID} /> : null}
+          {tool === "scout" ? (
+            <ScoutPreviewPanel player={player} selectedTile={selectedTile} preview={selectedScoutPreview} staged={stagedTarget?.kind === "scout"} />
+          ) : null}
+          {tool === "build" ? (
+            <section className="panel-section build-order active">
+              <div className="section-title">
+                <Factory size={15} />
+                <h2>Build Preview</h2>
+              </div>
+              <BuildPreview snapshot={viewSnapshot} player={player} tile={selectedTile} facilityId={facilityId} preview={selectedBuildPreview} />
+            </section>
+          ) : null}
+          {tool === "contracts" ? (
+            <MarketPanel
+              snapshot={viewSnapshot}
+              player={player}
+              routeOptions={routeOptions}
+              routeId={routeId}
+              demandId={demandId}
+              amount={amount}
+              setRouteId={setRouteId}
+              setDemandId={setDemandId}
+              setAmount={setAmount}
+              onBuyRoute={() => send("buyRoute", { routeId })}
+              onSell={() => send("sell", { routeId, demandId, amount })}
+              salePreview={selectedSalePreview}
+              buyPreview={selectedBuyPreview}
+              panelRef={routePanelRef}
+              highlight={spotlitPanel === "routes"}
+            />
+          ) : null}
+          {tool === "politics" ? (
+            <CivicPanel
+              panelRef={civicPanelRef}
+              highlight={spotlitPanel === "civic"}
+              snapshot={viewSnapshot}
+              playerID={playerID}
+              civicTarget={civicTarget}
+              setCivicTarget={setCivicTarget}
+              onAction={(actionId, targetPlayerId) => send("civicAction", { actionId, targetPlayerId })}
+              onPolicyChoice={(choiceId) => send("policyChoice", { choiceId })}
+            />
+          ) : null}
         </aside>
       </section>
     </main>
@@ -876,29 +932,84 @@ function BeatClockPanel({ snapshot, stagedTarget }: { snapshot: BasinRunState; s
   );
 }
 
+function BuildPalette({
+  snapshot,
+  player,
+  selectedTile,
+  hasStagedTarget,
+  facilityId,
+  onSelect,
+}: {
+  snapshot: BasinRunState;
+  player?: PlayerState;
+  selectedTile?: BasinTile;
+  hasStagedTarget: boolean;
+  facilityId: FacilityId;
+  onSelect: (facilityId: FacilityId) => void;
+}) {
+  return (
+    <div className="build-palette" aria-label="Facility build palette">
+      <div className="build-palette-head">
+        <span>Build Palette</span>
+        <strong>{hasStagedTarget && selectedTile ? `target ${selectedTile.id}` : "pick build site"}</strong>
+      </div>
+      <div className="build-palette-list">
+        {facilityList.map((facility) => {
+          const preview = getBuildPreviewState(snapshot, player, selectedTile, facility.id);
+          return (
+            <button
+              key={facility.id}
+              className={`facility-card${facilityId === facility.id ? " active" : ""}${preview.canBuild ? " ready" : ""}`}
+              title={`${facility.name}: ${preview.reason}`}
+              onClick={() => onSelect(facility.id)}
+            >
+              <FacilityGlyph facilityId={facility.id} />
+              <span>{facility.name}</span>
+              <small>
+                {preview.cost} CC / {facility.validTerrains.join(", ")}
+              </small>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ContextActionDock({
+  eyebrow,
   title,
   meta,
   detail,
+  actionLabel,
+  disabled,
   onConfirm,
+  onCancel,
 }: {
+  eyebrow: string;
   title: string;
   meta: string;
   detail: string;
+  actionLabel: string;
+  disabled?: boolean;
   onConfirm: () => void;
+  onCancel: () => void;
 }) {
   return (
-    <div className="context-action-dock" role="status" aria-label="Valid build action">
+    <div className="context-action-dock" role="status" aria-label="Context action">
       <div>
-        <span>Valid build site</span>
+        <span>{eyebrow}</span>
         <strong>{title}</strong>
         <small>
           {meta} / {detail}
         </small>
       </div>
-      <button className="primary-action compact" onClick={onConfirm}>
+      <button className="secondary-action compact" onClick={onCancel}>
+        Cancel
+      </button>
+      <button className="primary-action compact" disabled={disabled} onClick={onConfirm}>
         <ClipboardCheck size={15} />
-        Build
+        {actionLabel}
       </button>
     </div>
   );
@@ -958,7 +1069,11 @@ function ModePanel({
       ? `Scout mode: ${player?.actionsRemaining ?? 0}/3 moves remaining`
       : tool === "build"
         ? `Build mode: ${facility.name}`
-        : "Inspect mode";
+        : tool === "contracts"
+          ? "Contracts mode"
+          : tool === "politics"
+            ? "Politics mode"
+            : "Inspect mode";
 
   return (
     <div className="mode-panel">
@@ -1018,6 +1133,45 @@ function TileInspector({ tile, playerID }: { tile?: BasinTile; playerID: string 
           </div>
         </div>
       )}
+    </section>
+  );
+}
+
+function ScoutPreviewPanel({
+  player,
+  selectedTile,
+  preview,
+  staged,
+}: {
+  player?: PlayerState;
+  selectedTile?: BasinTile;
+  preview: ScoutMovePreview;
+  staged: boolean;
+}) {
+  return (
+    <section className="panel-section scout-panel">
+      <div className="section-title">
+        <Search size={15} />
+        <h2>Scout Order</h2>
+      </div>
+      <div className="scout-readout">
+        <div>
+          <span>Moves</span>
+          <strong>{player ? `${player.actionsRemaining}/3` : "-"}</strong>
+        </div>
+        <div>
+          <span>Target</span>
+          <strong>{staged && selectedTile ? selectedTile.id : "pick adjacent tile"}</strong>
+        </div>
+      </div>
+      <div className={`action-preview ${preview.canMove ? "positive" : "neutral"}`}>
+        <div>
+          {preview.canMove ? <CheckCircle2 size={14} /> : <Info size={14} />}
+          <strong>{staged ? preview.reason : "Choose a highlighted neighbor on the map"}</strong>
+        </div>
+        <p>{preview.canMove ? "The map dock will confirm the move before spending a scout action." : "Scout moves are one tile at a time and reveal nearby terrain."}</p>
+        <EffectList items={preview.effects} />
+      </div>
     </section>
   );
 }
@@ -1217,6 +1371,8 @@ function MarketPanel({
 }
 
 function CivicPanel({
+  panelRef,
+  highlight,
   snapshot,
   playerID,
   civicTarget,
@@ -1224,6 +1380,8 @@ function CivicPanel({
   onAction,
   onPolicyChoice,
 }: {
+  panelRef?: React.RefObject<HTMLElement>;
+  highlight?: boolean;
   snapshot: BasinRunState;
   playerID: string;
   civicTarget: string;
@@ -1239,7 +1397,7 @@ function CivicPanel({
   const rivalEvidence = getBlameEvidence(snapshot, civicTarget);
 
   return (
-    <section className="panel-section civic-section">
+    <section ref={panelRef} className={`panel-section civic-section${highlight ? " spotlight" : ""}`}>
       <div className="section-title">
         <Megaphone size={15} />
         <h2>Civic Optics</h2>
@@ -1401,6 +1559,48 @@ function firstRivalId(snapshot: BasinRunState, playerID: string): string | undef
 function ticksUntilModulo(tick: number, cadence: number): number {
   const remainder = tick % cadence;
   return remainder === 0 ? cadence : cadence - remainder;
+}
+
+function getScoutMovePreview(snapshot: BasinRunState, player: PlayerState | undefined, tile: BasinTile | undefined): ScoutMovePreview {
+  if (!player || !tile) {
+    return {
+      canMove: false,
+      reason: "Select a tile adjacent to the scout",
+      effects: [{ label: "Movement", value: "choose adjacent tile", tone: "neutral" }],
+    };
+  }
+  if (player.actionsRemaining <= 0) {
+    return {
+      canMove: false,
+      reason: "No scout moves until the next round beat",
+      effects: [{ label: "Movement", value: "0/3 moves", tone: "warning" }],
+    };
+  }
+  if (player.scoutTileId === tile.id) {
+    return {
+      canMove: false,
+      reason: "Scout is already on this tile",
+      effects: [{ label: "Movement", value: "pick a neighboring tile", tone: "neutral" }],
+    };
+  }
+  const current = snapshot.tiles.find((candidate) => candidate.id === player.scoutTileId);
+  const adjacent = current ? Math.abs(current.x - tile.x) + Math.abs(current.y - tile.y) === 1 : false;
+  if (!adjacent) {
+    return {
+      canMove: false,
+      reason: "Scout can only move one tile",
+      effects: [{ label: "Movement", value: "1-tile radius", tone: "warning" }],
+    };
+  }
+  return {
+    canMove: true,
+    reason: "Ready to move scout",
+    effects: [
+      { label: "Reveal", value: "adjacent basin", tone: "positive" },
+      { label: "Cost", value: "1 scout move", tone: "warning" },
+      { label: "Risk", value: tile.hazard > 1 ? "hazard plume" : "unknown", tone: tile.hazard > 1 ? "negative" : "neutral" },
+    ],
+  };
 }
 
 function getBuildCounts(snapshot: BasinRunState, player: PlayerState | undefined, facilityId: FacilityId): { valid: number; compatible: number } {
