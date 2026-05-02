@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="shell" x1="25" y1="32" x2="101" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset=".58" stop-color="#eff6f3"/>
+      <stop offset="1" stop-color="#c1d0cc"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="24" y1="48" x2="95" y2="82" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c9f2f4"/>
+      <stop offset="1" stop-color="#63afa8"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="64" cy="101" rx="50" ry="16" fill="#20272b" opacity=".17"/>
+  <rect x="21" y="57" width="82" height="39" rx="11" fill="url(#shell)" stroke="#2d7fa3" stroke-width="5"/>
+  <rect x="33" y="68" width="48" height="15" rx="7" fill="url(#glass)" opacity=".92"/>
+  <ellipse cx="40" cy="55" rx="17" ry="12" fill="#9ddce2" stroke="#f8f7f1" stroke-width="4"/>
+  <ellipse cx="69" cy="55" rx="17" ry="12" fill="#9ddce2" stroke="#f8f7f1" stroke-width="4"/>
+  <path d="M96 36h14v58H96z" fill="#c6a24a"/>
+  <path d="M101 29h9v10h-9z" fill="#7a5e13" opacity=".62"/>
+  <path d="M28 86h64" stroke="#2d7fa3" stroke-width="4" stroke-linecap="round" opacity=".74"/>
+</svg>

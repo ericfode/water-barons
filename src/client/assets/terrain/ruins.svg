@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 48">
+  <defs>
+    <linearGradient id="ruins-tile" x1="12" y1="7" x2="79" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f1ead7"/>
+      <stop offset=".62" stop-color="#ded8c7"/>
+      <stop offset="1" stop-color="#b7ad98"/>
+    </linearGradient>
+  </defs>
+  <path d="M46 2 90 24 46 46 2 24Z" fill="url(#ruins-tile)"/>
+  <path d="M28 32V17h9v15M42 32V12h10v20M58 32V19h8v13" stroke="#918773" stroke-width="4.4" stroke-linecap="round" opacity=".72"/>
+  <path d="M24 33h47" stroke="#20272b" stroke-width="1.6" opacity=".26"/>
+  <path d="M31 17h31" stroke="#f8f7f1" stroke-width="2.1" stroke-linecap="round" opacity=".58"/>
+  <path d="M52 15 67 24" stroke="#c6a24a" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+</svg>

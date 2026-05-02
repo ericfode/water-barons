@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 48">
+  <defs>
+    <linearGradient id="sink-tile" x1="12" y1="7" x2="79" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d3dfd9"/>
+      <stop offset=".58" stop-color="#b8c4bf"/>
+      <stop offset="1" stop-color="#7f918c"/>
+    </linearGradient>
+  </defs>
+  <path d="M46 2 90 24 46 46 2 24Z" fill="url(#sink-tile)"/>
+  <ellipse cx="46" cy="24" rx="29" ry="13" fill="#20272b" opacity=".14"/>
+  <ellipse cx="46" cy="24" rx="22" ry="10" fill="none" stroke="#7a8986" stroke-width="2.4" opacity=".76"/>
+  <ellipse cx="46" cy="24" rx="12" ry="5.5" fill="none" stroke="#f8f7f1" stroke-width="1.8" opacity=".46"/>
+  <ellipse cx="46" cy="24" rx="6.5" ry="3" fill="#596662" opacity=".72"/>
+  <path d="M28 17 65 31" stroke="#c8706d" stroke-width="1.8" stroke-linecap="round" opacity=".42"/>
+</svg>

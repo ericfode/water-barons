@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 48">
+  <defs>
+    <linearGradient id="hidden-tile" x1="12" y1="7" x2="80" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ebe4d3"/>
+      <stop offset="1" stop-color="#cfc5b0"/>
+    </linearGradient>
+  </defs>
+  <path d="M46 2 90 24 46 46 2 24Z" fill="url(#hidden-tile)" opacity=".72"/>
+  <path d="M17 18h58M13 26h66M24 34h44" stroke="#f8f7f1" stroke-width="1.4" opacity=".3"/>
+  <path d="M24 13 68 35M68 13 24 35" stroke="#b8ad99" stroke-width="1.1" opacity=".24"/>
+  <circle cx="46" cy="24" r="3.5" fill="#f8f7f1" opacity=".3"/>
+</svg>

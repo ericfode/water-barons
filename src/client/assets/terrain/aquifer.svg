@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 48">
+  <defs>
+    <linearGradient id="aquifer-tile" x1="15" y1="8" x2="77" y2="39" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d9f2f5"/>
+      <stop offset=".55" stop-color="#a8cde2"/>
+      <stop offset="1" stop-color="#6d9ecc"/>
+    </linearGradient>
+  </defs>
+  <path d="M46 2 90 24 46 46 2 24Z" fill="url(#aquifer-tile)"/>
+  <ellipse cx="46" cy="24" rx="29" ry="13" fill="#f8f7f1" opacity=".38"/>
+  <ellipse cx="46" cy="24" rx="22" ry="10" fill="none" stroke="#5578c5" stroke-width="2.2" opacity=".64"/>
+  <ellipse cx="46" cy="24" rx="14" ry="6.5" fill="none" stroke="#2d7fa3" stroke-width="2" opacity=".74"/>
+  <ellipse cx="46" cy="24" rx="6" ry="3" fill="#2d7fa3" opacity=".86"/>
+  <path d="M24 17 36 12M59 35l13-7" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" opacity=".7"/>
+</svg>

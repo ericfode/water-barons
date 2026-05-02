@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="chrome" x1="32" y1="23" x2="92" y2="102" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset=".5" stop-color="#e9f5f2"/>
+      <stop offset="1" stop-color="#aebfbb"/>
+    </linearGradient>
+    <linearGradient id="water" x1="22" y1="68" x2="104" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9fe1e7"/>
+      <stop offset="1" stop-color="#2d7fa3"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="64" cy="98" rx="47" ry="15" fill="#20272b" opacity=".18"/>
+  <ellipse cx="64" cy="82" rx="44" ry="23" fill="url(#water)" stroke="#2d7fa3" stroke-width="5"/>
+  <path d="M44 80c11 9 29 9 40 0" fill="none" stroke="#f8f7f1" stroke-width="5" stroke-linecap="round" opacity=".78"/>
+  <rect x="52" y="35" width="24" height="47" rx="7" fill="url(#chrome)" stroke="#c6a24a" stroke-width="4"/>
+  <circle cx="64" cy="34" r="17" fill="#f8f7f1" stroke="#c6a24a" stroke-width="5"/>
+  <path d="M64 18v31M49 34h30" stroke="#2d7fa3" stroke-width="3" stroke-linecap="round" opacity=".72"/>
+  <circle cx="64" cy="34" r="5" fill="#63afa8"/>
+</svg>

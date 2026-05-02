@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 48">
+  <defs>
+    <linearGradient id="fog-tile" x1="11" y1="6" x2="79" y2="41" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#eef5ef"/>
+      <stop offset=".6" stop-color="#d8e4de"/>
+      <stop offset="1" stop-color="#a7bdb9"/>
+    </linearGradient>
+  </defs>
+  <path d="M46 2 90 24 46 46 2 24Z" fill="url(#fog-tile)"/>
+  <path d="M18 20h32c6 0 8-8 2-11-5-2-9 0-12 4-7-5-17 0-22 7Z" fill="#f8f7f1" opacity=".76"/>
+  <path d="M26 29h42M17 35h32M55 35h20" stroke="#7aa6a1" stroke-width="2.4" stroke-linecap="round" opacity=".72"/>
+  <path d="M30 15h17M57 24h16" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
+</svg>
