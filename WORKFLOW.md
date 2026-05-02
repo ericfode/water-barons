@@ -2,7 +2,7 @@
 tracker:
   kind: linear
   api_key: $LINEAR_API_KEY
-  project_slug: "TODO-linear-project-slug"
+  project_slug: "__SYMPHONY_LINEAR_PROJECT_SLUG__"
   active_states:
     - Todo
     - In Progress
@@ -17,20 +17,40 @@ tracker:
 polling:
   interval_ms: 30000
 workspace:
-  root: ~/code/waterbarons-basin-run-symphony-workspaces
+  root: $SYMPHONY_WORKSPACE_ROOT
 hooks:
   timeout_ms: 300000
   after_create: |
-    set -eu
-    SOURCE_REPO="${SYMPHONY_SOURCE_REPO:-https://github.com/ericfode/water-barons.git}"
-    git clone --depth 1 "$SOURCE_REPO" .
+    set -euo pipefail
+
+    source_root="${SYMPHONY_SOURCE_ROOT:-/Users/ericfode/Documents/New project}"
+    if [ ! -d "$source_root" ]; then
+      echo "Waterbarons source root not found: $source_root" >&2
+      exit 1
+    fi
+
+    rsync -a --delete \
+      --exclude '.git' \
+      --exclude '.symphony' \
+      --exclude 'node_modules' \
+      --exclude 'dist' \
+      --exclude '.vite' \
+      --exclude '.DS_Store' \
+      "$source_root"/ .
+
     npm ci --no-audit --no-fund
+
+    git init -q
+    git config user.name "Symphony Agent"
+    git config user.email "symphony-agent@example.invalid"
+    git add -A
+    git commit -qm "Import Waterbarons workspace snapshot" || true
   before_run: |
-    set -eu
-    git status --short --branch
+    set -euo pipefail
     npm ci --no-audit --no-fund
+    git status --short --branch
   after_run: |
-    set -eu
+    set -euo pipefail
     git status --short --branch
 agent:
   max_concurrent_agents: 2
@@ -47,11 +67,14 @@ server:
   port: 4077
 ---
 
-You are Vantage running under Symphony for `Waterbarons: Basin Run`.
+You are Vantage running under Symphony for `Waterbarons: Basin Run`, a browser-based
+multiplayer roguelike city/basebuilder derived from the original `ericfode/water-barons`
+board/card engine-builder concept.
 
 You are working on Linear issue `{{ issue.identifier }}`.
 
 Issue context:
+
 - Identifier: `{{ issue.identifier }}`
 - Title: `{{ issue.title }}`
 - Current status: `{{ issue.state }}`
@@ -59,6 +82,7 @@ Issue context:
 - URL: `{{ issue.url }}`
 
 Description:
+
 {% if issue.description %}
 {{ issue.description }}
 {% else %}
@@ -67,42 +91,45 @@ No description provided.
 
 ## Operating Contract
 
-1. Work only inside the provided issue workspace.
+1. Work only inside the provided issue workspace. Do not edit the source checkout
+   directly from a Symphony run.
 2. Read `AGENTS.md`, `README.md`, and this `WORKFLOW.md` before making code changes.
-3. Recover explicit state first: current branch, `git status --short --branch`, `git log --oneline -5`, package scripts, and relevant source/tests.
+3. Recover explicit state first: current branch, `git status --short --branch`,
+   current `HEAD`, package scripts, and relevant source/tests/docs.
 4. Keep the issue scope narrow. Ship one meaningful increment per issue.
 5. Preserve unrelated work. Never revert user changes or unrelated local changes.
-6. Prefer durable evidence over narrative: exact files changed, exact commands run, and exact validation results.
-7. Do not stop early unless blocked by missing auth, missing permissions, unavailable required tools, or a genuinely ambiguous product decision.
+6. Prefer durable evidence over narrative: exact files changed, exact commands run,
+   and exact validation results.
+7. If Linear tooling is available, keep a single issue workpad comment current. If it
+   is not available, record that as a blocker in the final message.
+8. Ask for human input only when missing secrets, permissions, or product intent make
+   further autonomous progress unsafe.
 
 ## Linear State Flow
 
-- `Todo`: move to `In Progress`, create or update one persistent `## Symphony Workpad` comment, then begin.
+- `Todo`: move to `In Progress`, create or update one persistent `## Symphony Workpad`
+  comment, then begin.
 - `In Progress`: continue from the current workspace and workpad.
-- `Rework`: reread the issue and review feedback, name what changes in the approach, then implement.
-- `Human Review`: do not make code changes unless the issue moves back to an active state.
-- `Merging`: use `.codex/skills/land/SKILL.md` if present. Do not merge by improvisation.
+- `Rework`: reread the issue and review feedback, name what changes in the approach,
+  then implement.
+- `Human Review`: do not make code changes unless the issue moves back to an active
+  state.
+- `Merging`: use `.codex/skills/land/SKILL.md` if present. Do not merge by
+  improvisation.
 - `Done`, `Closed`, `Cancelled`, `Canceled`, `Duplicate`: terminal. Do no work.
 
-Use the `linear` skill or Symphony's `linear_graphql` tool when available. Keep a single workpad comment current; do not scatter progress across multiple comments.
+## Required Validation
 
-## Execution Flow
+- Always run `npm run test` for code or behavior changes.
+- Always run `npm run build` for code, UI, or dependency changes.
+- For UI-facing changes, also run the app and capture a concrete browser/manual
+  verification note for the changed path.
+- For documentation-only edits, reread the changed artifact and run a targeted
+  consistency check when one is available.
 
-1. Reconcile the workpad with the current issue state.
-2. Write a compact plan with acceptance criteria and validation checkboxes.
-3. Reproduce or inspect the current behavior before editing when the issue is a bug.
-4. Create a branch named `symphony/{{ issue.identifier }}-<short-title>` unless the workspace already has an appropriate branch.
-5. Implement the smallest change that satisfies the issue.
-6. Update tests or docs when the behavior or workflow contract changes.
-7. Run the strongest relevant local gates:
-   - Always run `npm run test`.
-   - Always run `npm run build`.
-   - For UI-facing changes, also run the app and capture a concrete browser/manual verification note.
-8. Commit only the intended changes.
-9. If a pushable `origin` remote exists, push the branch and create or update a PR.
-10. If no pushable remote or GitHub auth is available, record the blocker in the workpad with exact evidence and leave the issue in `Human Review`.
-11. Move the issue to `Human Review` only after validation passes or after documenting a true external blocker.
+## Handoff
 
-## Final Response
-
-Report completed actions, validation, PR or blocker state, and changed files only. Do not include generic next-step suggestions.
+- Final message reports completed actions, validation run, remaining blockers, and
+  the local commit or PR if one was created.
+- Do not include generic "next steps for the user" unless blocked by a specific
+  missing credential or project decision.
